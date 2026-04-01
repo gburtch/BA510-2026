@@ -1,0 +1,1057 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>CharRNN Training — BA 510</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+<style>
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
+html{font-size:15px}
+body{
+  font-family:'Inter',system-ui,sans-serif;
+  background:#fff;color:#1e293b;
+  height:100vh;overflow:hidden;
+}
+code,.mono{font-family:'Courier New',Courier,monospace}
+
+/* ── TOP BAR ── */
+#topbar{
+  position:fixed;top:0;left:0;right:0;z-index:200;
+  background:rgba(255,255,255,.96);backdrop-filter:blur(8px);
+  border-bottom:1px solid #e2e8f0;
+  display:flex;align-items:center;justify-content:space-between;
+  padding:10px 24px;
+  height:56px;
+}
+#topbar-title{font-weight:700;font-size:1.1rem;color:#1e293b;letter-spacing:-.01em}
+#step-counter{
+  font-family:'JetBrains Mono',monospace;font-size:.85rem;
+  color:#64748b;font-weight:500;white-space:nowrap;
+}
+#topbar-right{display:flex;gap:6px;align-items:center}
+#topbar-right button{
+  padding:5px 14px;border:1px solid #cbd5e1;border-radius:6px;
+  background:#fff;color:#334155;font-family:'Inter',sans-serif;
+  font-size:.82rem;font-weight:500;cursor:pointer;
+  transition:all .15s;user-select:none;
+}
+#topbar-right button:hover{background:#f1f5f9;border-color:#94a3b8}
+#topbar-right button.primary{background:#3b82f6;color:#fff;border-color:#3b82f6}
+#topbar-right button.primary:hover{background:#2563eb}
+#topbar-right button.active{background:#059669;color:#fff;border-color:#059669}
+#topbar-right button:disabled{opacity:.38;cursor:default;pointer-events:none}
+
+/* ── DESCRIPTION BAR ── */
+#desc-bar{
+  position:fixed;top:56px;left:0;right:0;z-index:150;
+  background:#f8fafc;border-bottom:1px solid #e2e8f0;
+  padding:7px 24px;
+  font-size:.84rem;color:#475569;line-height:1.45;
+  min-height:38px;
+}
+
+/* ── WALKTHROUGH BAR ── */
+.wt-dot {
+  width: 10px; height: 10px; border-radius: 50%; flex-shrink: 0;
+  transition: background .3s;
+}
+.wt-dot.connecting { background: #94a3b8; animation: blink 1s infinite; }
+.wt-dot.listening  { background: #3b82f6; }
+.wt-dot.speaking   { background: #059669; animation: pulse-speaking 0.6s infinite alternate; }
+@keyframes blink { 0%,100%{opacity:1} 50%{opacity:.3} }
+@keyframes pulse-speaking { from{transform:scale(1)} to{transform:scale(1.4)} }
+
+/* ── MAIN SPLIT LAYOUT ── */
+#main-content{
+  position:fixed;
+  top:94px;left:0;right:0;bottom:0;
+  display:flex;
+}
+
+/* ── LEFT PANEL (visualization) ── */
+#left-panel{
+  width:56%;
+  border-right:1px solid #e2e8f0;
+  overflow-y:auto;
+  padding:36px 40px;
+  position:relative;
+}
+
+/* ── RIGHT PANEL (code) ── */
+#right-panel{
+  width:44%;
+  background:#fff;
+  display:flex;flex-direction:column;
+  overflow:hidden;
+}
+#code-header{
+  padding:10px 20px;
+  background:#f1f3f4;
+  border-bottom:1px solid #dadce0;
+  display:flex;align-items:center;justify-content:space-between;
+  flex-shrink:0;
+}
+#code-header-title{
+  font-family:'JetBrains Mono',monospace;
+  font-size:.78rem;color:#5f6368;font-weight:500;
+}
+#code-header-badge{
+  font-size:.72rem;color:#1a73e8;font-family:'JetBrains Mono',monospace;
+  padding:2px 8px;background:rgba(26,115,232,.08);border-radius:4px;
+  border:1px solid rgba(26,115,232,.2);
+}
+#code-body{
+  flex:1;overflow-y:auto;
+  padding:20px;
+  scrollbar-color:#dadce0 transparent;
+}
+#code-body::-webkit-scrollbar{width:6px}
+#code-body::-webkit-scrollbar-track{background:transparent}
+#code-body::-webkit-scrollbar-thumb{background:#dadce0;border-radius:3px}
+
+/* Code section: one per step */
+.code-section{display:none}
+.code-section.active{display:block}
+
+.code-block{
+  font-family:'Courier New',Courier,monospace;
+  font-size:.82rem;
+  line-height:1.45;
+  color:#000;
+  white-space:pre;
+}
+.code-line{
+  display:block;
+  padding:0 2px;
+}
+.code-line.hl{
+  background:#fff8c5;
+  border-left:3px solid #f59e0b;
+  padding-left:6px;
+  color:#000;
+}
+.code-kw  { color: #0033b3 }
+.code-str { color: #067d17 }
+.code-cm  { color: #8c8c8c; font-style: italic }
+.code-num { color: #1750eb }
+.code-fn  { color: #00627a }
+.code-const { color: #000 }
+
+/* Step label above code */
+.code-step-label{
+  font-size:.72rem;color:#5f6368;font-weight:600;
+  text-transform:uppercase;letter-spacing:.04em;
+  margin-bottom:10px;
+  font-family:'Inter',sans-serif;
+}
+
+/* ── STEP CONTENT (left panel) ── */
+.step-view{display:none}
+.step-view.active{display:block}
+
+/* ── FLOW ELEMENTS ── */
+.flow{display:flex;align-items:center;gap:18px;flex-wrap:nowrap}
+.flow-col{display:flex;flex-direction:column;align-items:center;gap:10px}
+.arrow{font-size:1.6rem;color:#94a3b8;flex-shrink:0;font-weight:300;line-height:1}
+.arr-sm{color:#94a3b8;font-size:.85rem}
+
+/* ── TOKEN BOXES ── */
+.token{
+  display:inline-flex;align-items:center;justify-content:center;
+  width:40px;height:40px;
+  border:2px solid #475569;border-radius:6px;
+  background:#f1f5f9;
+  font-family:'JetBrains Mono',monospace;font-size:1rem;font-weight:600;
+  color:#1e293b;flex-shrink:0;
+}
+.token.highlight{background:#fef9c3;border-color:#ca8a04}
+
+/* ── INTEGER CIRCLES ── */
+.int-circle{
+  display:inline-flex;align-items:center;justify-content:center;
+  width:38px;height:38px;border-radius:50%;
+  border:2px solid #0891b2;background:#ecfeff;
+  font-family:'JetBrains Mono',monospace;font-size:.82rem;font-weight:600;
+  color:#0e7490;flex-shrink:0;
+}
+
+/* ── LAYER BOXES ── */
+.layer-textvec{background:#475569;color:#fff;border:2px solid #334155;border-radius:10px;padding:12px 20px;font-weight:600;font-size:.88rem;text-align:center}
+.layer-embedding{background:#ecfeff;color:#0e7490;border:2px solid #0891b2;border-radius:10px;padding:12px 20px;font-weight:600;font-size:.88rem;text-align:center}
+.layer-rnn{background:#ecfdf5;color:#047857;border:2px solid #059669;border-radius:10px;padding:12px 20px;font-weight:600;font-size:.88rem;text-align:center}
+.layer-dense{background:#f5f3ff;color:#6d28d9;border:2px solid #7c3aed;border-radius:10px;padding:12px 20px;font-weight:600;font-size:.88rem;text-align:center}
+
+/* ── PILLS ── */
+.h-pill{display:inline-flex;align-items:center;justify-content:center;padding:5px 11px;border-radius:6px;background:#ecfdf5;border:2px solid #059669;font-family:'JetBrains Mono',monospace;font-size:.78rem;font-weight:600;color:#047857;flex-shrink:0}
+.pred-pill{display:inline-flex;align-items:center;justify-content:center;padding:5px 11px;border-radius:6px;background:#f5f3ff;border:2px solid #7c3aed;font-family:'JetBrains Mono',monospace;font-size:.88rem;font-weight:600;color:#6d28d9;flex-shrink:0}
+.target-pill{display:inline-flex;align-items:center;justify-content:center;padding:5px 11px;border-radius:6px;background:#ecfdf5;border:2px solid #059669;font-family:'JetBrains Mono',monospace;font-size:.88rem;font-weight:600;color:#047857;flex-shrink:0}
+.vec-pill{display:inline-block;padding:6px 12px;border-radius:8px;background:#ecfeff;border:2px solid #0891b2;font-family:'JetBrains Mono',monospace;font-size:.75rem;color:#0e7490;white-space:nowrap}
+
+/* ── PIPELINE (overview) ── */
+.pipeline{display:flex;align-items:center;gap:8px;padding:20px 16px;background:#f8fafc;border-radius:12px;border:1px solid #e2e8f0;overflow-x:auto;flex-wrap:nowrap}
+.pipe-node{display:flex;flex-direction:column;align-items:center;gap:5px;flex-shrink:0}
+.pipe-shape{padding:8px 14px;border-radius:8px;font-weight:600;font-size:.78rem;text-align:center;white-space:nowrap}
+.pipe-label{font-size:.68rem;color:#94a3b8;font-family:'JetBrains Mono',monospace}
+.pipe-arrow{font-size:1.3rem;color:#cbd5e1;flex-shrink:0}
+
+/* ── TEXT BLOCK ── */
+.text-block{padding:12px 16px;background:#f8fafc;border:1px solid #e2e8f0;border-radius:8px;font-family:'JetBrains Mono',monospace;font-size:.8rem;line-height:1.65;color:#334155;white-space:pre-wrap;max-width:340px}
+.text-highlight{background:#fef9c3;border-radius:3px;padding:1px 3px;border:1px solid #ca8a04}
+
+/* ── SECTION TITLES ── */
+.section-title{font-size:1.2rem;font-weight:700;margin-bottom:14px;color:#1e293b;letter-spacing:-.02em}
+.section-sub{font-size:.84rem;color:#64748b;margin-bottom:20px;line-height:1.5}
+
+/* ── NOTE ── */
+.note{margin-top:14px;padding:10px 14px;background:#fffbeb;border-left:3px solid #f59e0b;border-radius:0 6px 6px 0;font-size:.8rem;color:#92400e;line-height:1.5}
+
+/* ── EMBEDDING TABLE ── */
+#emb-matrix td,#emb-matrix th{padding:3px 7px;border:1px solid #e2e8f0;font-family:'JetBrains Mono',monospace;font-size:.62rem}
+#emb-row-28{background:#fef9c3;transition:background .4s}
+#emb-row-28 td{color:#0e7490;font-weight:700}
+
+/* ── RNN ANIMATION ── */
+.rnn-slot{transition:all .35s;border-radius:6px}
+#rnn-cell-box{transition:box-shadow .3s,background .3s}
+
+/* ── DENSE PARALLEL ── */
+.dense-row{display:flex;align-items:center;gap:6px;padding:3px 0;font-size:.75rem}
+.dense-mini{padding:3px 8px;border-radius:5px;font-size:.6rem;font-weight:600;white-space:nowrap}
+.arr-sm{color:#94a3b8;font-size:.8rem}
+
+/* ── MINI BAR CHART ── */
+.mini-bars{display:flex;align-items:flex-end;gap:2px;height:28px}
+.mini-bar{width:4px;background:#7c3aed;border-radius:1px 1px 0 0;opacity:.5}
+.mini-bar.tall{height:26px;opacity:1}
+
+/* ── LOSS SHIFT ── */
+.shift-diagram{display:flex;flex-direction:column;gap:4px;font-family:'JetBrains Mono',monospace;font-size:.8rem;padding:10px 14px;background:#f8fafc;border-radius:8px;border:1px solid #e2e8f0}
+.shift-row{display:flex;align-items:center;gap:6px}
+.shift-label{width:64px;font-weight:600;color:#64748b;font-size:.72rem}
+.formula{font-family:'JetBrains Mono',monospace;font-size:.84rem;color:#1e293b;padding:10px 16px;background:#f8fafc;border:1px solid #e2e8f0;border-radius:8px;text-align:center}
+
+/* ── COMPARE ROW ── */
+.compare-row{display:flex;align-items:center;gap:12px}
+.check{color:#059669;font-weight:700;font-size:1.1rem}
+
+/* ── ANIMATIONS ── */
+@keyframes fadeInUp{from{opacity:0;transform:translateY(14px)}to{opacity:1;transform:translateY(0)}}
+.animate-in{animation:fadeInUp .45s ease both}
+@keyframes pulse-green{0%,100%{box-shadow:0 0 0 0 rgba(5,150,105,.3)}50%{box-shadow:0 0 0 10px rgba(5,150,105,0)}}
+.rnn-cell.processing{animation:pulse-green .7s ease}
+</style>
+<script src="https://cdn.jsdelivr.net/npm/livekit-client@2.11.4/dist/livekit-client.umd.js"></script>
+<script>window.livekitClient = window.LivekitClient;</script>
+<script src="https://cdn.jsdelivr.net/npm/@11labs/client@0.2.0/dist/lib.umd.js"></script>
+</head>
+<body>
+
+<!-- ══ TOP BAR ══ -->
+<div id="topbar">
+  <div id="topbar-title">CharRNN Training — BA 510</div>
+  <div id="step-counter">Step 1 of 6</div>
+  <div id="topbar-right">
+    <button id="btn-prev" disabled>&larr; Prev</button>
+    <button id="btn-next" class="primary">Next &rarr;</button>
+    <button id="btn-reset">Reset</button>
+    <button id="btn-walkthrough" onclick="startWalkthrough()">&#9654; Start Walkthrough</button>
+  </div>
+</div>
+
+<!-- ══ DESC BAR ══ -->
+<div id="desc-bar">The full CharRNN training pipeline: raw Shakespeare text → predicted next character at every position.</div>
+
+<!-- ══ WALKTHROUGH BAR ══ -->
+<div id="walkthrough-bar" style="display:none; position:fixed; top:94px; left:0; right:0; z-index:140; background:#f0fdf4; border-bottom:1px solid #86efac; padding:7px 24px; align-items:center; gap:12px;">
+  <div id="wt-dot" class="wt-dot listening"></div>
+  <div id="wt-status" style="font-size:.84rem; color:#15803d; font-weight:500; flex:1">Listening…</div>
+  <button id="btn-end-walkthrough" onclick="endWalkthrough()" style="padding:4px 12px; border:1px solid #86efac; border-radius:5px; background:#fff; color:#15803d; font-size:.8rem; cursor:pointer;">&#9632; End</button>
+</div>
+
+<!-- ══ MAIN SPLIT ══ -->
+<div id="main-content">
+
+  <!-- ════ LEFT PANEL: Visualization ════ -->
+  <div id="left-panel">
+
+  <!-- ─── STEP 0: OVERVIEW ─── -->
+  <div class="step-view active" id="step-0">
+    <div class="section-title">Overview: The Full Training Pipeline</div>
+    <div class="section-sub">Given every character seen so far, the model predicts the next one. Training repeats this over millions of positions across Shakespeare's complete works.</div>
+
+    <div class="pipeline">
+      <div class="pipe-node"><div class="pipe-shape" style="background:#f1f5f9;border:2px solid #475569;color:#1e293b">text</div><div class="pipe-label">raw input</div></div>
+      <div class="pipe-arrow">&rarr;</div>
+      <div class="pipe-node"><div class="pipe-shape" style="background:#475569;color:#fff">TextVec</div><div class="pipe-label">char→int</div></div>
+      <div class="pipe-arrow">&rarr;</div>
+      <div class="pipe-node"><div class="pipe-shape" style="background:#ecfeff;color:#0e7490;border:2px solid #0891b2">Embedding</div><div class="pipe-label">67×256</div></div>
+      <div class="pipe-arrow">&rarr;</div>
+      <div class="pipe-node"><div class="pipe-shape" style="background:#ecfdf5;color:#047857;border:2px solid #059669">GRU</div><div class="pipe-label">1024 units</div></div>
+      <div class="pipe-arrow">&rarr;</div>
+      <div class="pipe-node"><div class="pipe-shape" style="background:#f5f3ff;color:#6d28d9;border:2px solid #7c3aed">Dense(67)+Softmax</div><div class="pipe-label">67 probs → argmax</div></div>
+      <div class="pipe-arrow">&rarr;</div>
+      <div class="pipe-node"><div class="pipe-shape" style="background:#f5f3ff;border:2px solid #7c3aed;color:#6d28d9;font-size:1.1rem;font-weight:700">ĉ</div><div class="pipe-label">predicted char</div></div>
+    </div>
+
+    <!-- Real example -->
+    <div style="margin-top:28px;display:flex;align-items:flex-start;justify-content:center;gap:28px;flex-wrap:wrap">
+      <!-- Input text -->
+      <div>
+        <div style="font-size:.72rem;color:#64748b;font-weight:600;margin-bottom:6px">Input text seen so far</div>
+        <div style="font-family:'JetBrains Mono',monospace;font-size:.75rem;line-height:1.6;padding:12px 16px;border-radius:8px;background:#fefce8;border:2px solid #facc15;color:#1e293b;max-width:260px">King Richard III:<br>How now, what means<br>this armed g</div>
+      </div>
+      <div style="font-size:1.4rem;color:#94a3b8;padding-top:32px">&rarr;</div>
+      <!-- Compact pipeline badges -->
+      <div style="padding-top:32px">
+        <div style="font-size:.68rem;color:#94a3b8;margin-bottom:6px">through the model</div>
+        <div style="display:flex;gap:4px;align-items:center;font-size:.68rem">
+          <span style="padding:4px 8px;background:#475569;color:#fff;border-radius:4px">TextVec</span>
+          <span style="color:#94a3b8">&rarr;</span>
+          <span style="padding:4px 8px;background:#ecfeff;color:#0891b2;border:1px solid #0891b2;border-radius:4px">Embed</span>
+          <span style="color:#94a3b8">&rarr;</span>
+          <span style="padding:4px 8px;background:#ecfdf5;color:#059669;border:1px solid #059669;border-radius:4px">GRU</span>
+          <span style="color:#94a3b8">&rarr;</span>
+          <span style="padding:4px 8px;background:#f5f3ff;color:#7c3aed;border:1px solid #7c3aed;border-radius:4px">Dense+Softmax</span>
+        </div>
+      </div>
+      <div style="font-size:1.4rem;color:#94a3b8;padding-top:32px">&rarr;</div>
+      <!-- Prediction vs actual -->
+      <div style="padding-top:20px;text-align:center">
+        <div style="display:flex;gap:14px;align-items:center">
+          <div><div style="font-size:.68rem;color:#7c3aed;font-weight:600;margin-bottom:4px">Prediction</div><div style="width:46px;height:46px;border-radius:10px;background:#f5f3ff;border:2px solid #7c3aed;color:#7c3aed;display:flex;align-items:center;justify-content:center;font:700 1.35rem 'JetBrains Mono',monospace">u</div></div>
+          <div style="font-size:.85rem;color:#94a3b8">&harr;</div>
+          <div><div style="font-size:.68rem;color:#059669;font-weight:600;margin-bottom:4px">Actual next</div><div style="width:46px;height:46px;border-radius:10px;background:#ecfdf5;border:2px solid #059669;color:#059669;display:flex;align-items:center;justify-content:center;font:700 1.35rem 'JetBrains Mono',monospace">u</div></div>
+        </div>
+        <div style="font-size:.72rem;color:#059669;margin-top:6px">&#10003; match → low loss</div>
+      </div>
+    </div>
+
+    <div class="note"><strong>In training:</strong> this prediction happens at <em>every position simultaneously</em> (100 positions per sequence). The target at each position is the next character. Loss is averaged across all positions and all sequences in the batch.</div>
+  </div>
+
+  <!-- ─── STEP 1: INPUT ─── -->
+  <div class="step-view" id="step-1">
+    <div class="section-title">Step 1: Text → Integers (Preprocessing)</div>
+    <div class="section-sub">Shakespeare text is split into characters and mapped to unique integers before entering the model.</div>
+
+    <div class="flow" style="gap:20px;align-items:flex-start">
+      <!-- Raw text -->
+      <div>
+        <div style="font-size:.72rem;color:#64748b;font-weight:600;margin-bottom:6px">Raw text (excerpt)</div>
+        <div class="text-block">King Richard III:
+How now, what means
+this armed guard
+That waits upon your
+grace?</div>
+        <div style="margin-top:10px;font-size:.72rem;color:#64748b;font-weight:600;margin-bottom:4px">6-character window:</div>
+        <div class="text-block"><span class="text-highlight">K i n g &nbsp;R</span>ichard...</div>
+      </div>
+      <div class="arrow">&rarr;</div>
+      <!-- Chars -->
+      <div style="text-align:center">
+        <div style="font-size:.72rem;color:#64748b;font-weight:600;margin-bottom:6px">Split by character</div>
+        <div style="display:flex;gap:5px">
+          <div class="token highlight">K</div><div class="token highlight">i</div>
+          <div class="token highlight">n</div><div class="token highlight">g</div>
+          <div class="token highlight">&nbsp;</div><div class="token highlight">R</div>
+        </div>
+        <div style="margin-top:16px;font-size:.72rem;color:#64748b;font-weight:600;margin-bottom:6px">TextVectorization → integers</div>
+        <div style="display:flex;gap:5px">
+          <div class="int-circle">28</div><div class="int-circle">6</div>
+          <div class="int-circle">11</div><div class="int-circle">4</div>
+          <div class="int-circle">2</div><div class="int-circle">15</div>
+        </div>
+        <div style="font-size:.68rem;color:#0891b2;margin-top:8px">67 unique chars total (26×2 + punctuation)</div>
+      </div>
+      <div class="arrow">&rarr;</div>
+      <!-- Shift diagram -->
+      <div>
+        <div style="font-size:.72rem;color:#64748b;font-weight:600;margin-bottom:8px">Input / Target offset</div>
+        <div class="shift-diagram">
+          <div class="shift-row"><span class="shift-label">Input:</span><span class="token highlight" style="width:32px;height:32px;font-size:.85rem">K</span><span class="token highlight" style="width:32px;height:32px;font-size:.85rem">i</span><span class="token highlight" style="width:32px;height:32px;font-size:.85rem">n</span><span class="token highlight" style="width:32px;height:32px;font-size:.85rem">g</span><span class="token highlight" style="width:32px;height:32px;font-size:.85rem">&nbsp;</span></div>
+          <div style="margin:2px 0 2px 64px;font-size:.65rem;color:#64748b">←— shift by 1 —→</div>
+          <div class="shift-row"><span class="shift-label">Target:</span><span class="target-pill" style="padding:4px 8px;font-size:.82rem">i</span><span class="target-pill" style="padding:4px 8px;font-size:.82rem">n</span><span class="target-pill" style="padding:4px 8px;font-size:.82rem">g</span><span class="target-pill" style="padding:4px 8px;font-size:.82rem">&nbsp;</span><span class="target-pill" style="padding:4px 8px;font-size:.82rem">R</span></div>
+        </div>
+        <div style="font-size:.72rem;color:#059669;margin-top:8px;font-weight:500">&#10004; These integers enter the model</div>
+      </div>
+    </div>
+
+    <div class="note"><strong>Why shift by 1?</strong> We want to predict the <em>next</em> character from the current one. Using the same text offset by one position gives us free supervised labels from unsupervised data. <code>shakespeare[1:]</code> is the target; <code>shakespeare[:-1]</code> is the input.</div>
+  </div>
+
+  <!-- ─── STEP 2: EMBEDDING ─── -->
+  <div class="step-view" id="step-2">
+    <div class="section-title">Step 2: Embedding Layer</div>
+    <div class="section-sub">Each integer is a row index into a learned 67 × 256 lookup table. Integer 28 (representing "K") retrieves row 28 — a 256-dimensional dense vector.</div>
+
+    <div class="flow" style="gap:20px;align-items:flex-start">
+      <!-- Integers -->
+      <div style="padding-top:36px">
+        <div style="font-size:.72rem;color:#64748b;font-weight:600;margin-bottom:6px">Integer IDs</div>
+        <div style="display:flex;gap:5px">
+          <div class="int-circle" style="border-width:3px;background:#fef9c3;border-color:#ca8a04;color:#92400e">28</div>
+          <div class="int-circle">6</div><div class="int-circle">11</div>
+          <div class="int-circle">4</div><div class="int-circle">2</div><div class="int-circle">15</div>
+        </div>
+        <div style="font-size:.65rem;color:#94a3b8;margin-top:6px">28 = "K"  (highlighted)</div>
+      </div>
+      <div class="arrow" style="padding-top:36px">&rarr;</div>
+      <!-- Embedding matrix -->
+      <div>
+        <div style="font-size:.72rem;color:#64748b;font-weight:600;margin-bottom:6px">Embedding Matrix — 67 rows × 256 cols (learned)</div>
+        <table id="emb-matrix" style="border-collapse:collapse">
+          <thead><tr style="background:#f8fafc">
+            <th style="padding:3px 7px;border:1px solid #e2e8f0;color:#94a3b8">Row</th>
+            <th style="padding:3px 7px;border:1px solid #e2e8f0;color:#94a3b8">col 0</th>
+            <th style="padding:3px 7px;border:1px solid #e2e8f0;color:#94a3b8">col 1</th>
+            <th style="padding:3px 7px;border:1px solid #e2e8f0;color:#94a3b8">col 2</th>
+            <th style="padding:3px 7px;border:1px solid #e2e8f0;color:#94a3b8">&hellip;</th>
+            <th style="padding:3px 7px;border:1px solid #e2e8f0;color:#94a3b8">col 255</th>
+          </tr></thead>
+          <tbody>
+            <tr><td style="padding:3px 7px;border:1px solid #e2e8f0;font-weight:600;color:#64748b">0</td><td style="padding:3px 7px;border:1px solid #e2e8f0;color:#64748b">.04</td><td style="padding:3px 7px;border:1px solid #e2e8f0;color:#64748b">-.22</td><td style="padding:3px 7px;border:1px solid #e2e8f0;color:#64748b">.15</td><td style="padding:3px 7px;border:1px solid #e2e8f0;color:#94a3b8">&hellip;</td><td style="padding:3px 7px;border:1px solid #e2e8f0;color:#64748b">.07</td></tr>
+            <tr><td style="padding:3px 7px;border:1px solid #e2e8f0;font-weight:600;color:#64748b">1</td><td style="padding:3px 7px;border:1px solid #e2e8f0;color:#64748b">.18</td><td style="padding:3px 7px;border:1px solid #e2e8f0;color:#64748b">.09</td><td style="padding:3px 7px;border:1px solid #e2e8f0;color:#64748b">-.44</td><td style="padding:3px 7px;border:1px solid #e2e8f0;color:#94a3b8">&hellip;</td><td style="padding:3px 7px;border:1px solid #e2e8f0;color:#64748b">-.16</td></tr>
+            <tr><td colspan="6" style="text-align:center;color:#94a3b8;padding:2px;font-size:.6rem;border:1px solid #e2e8f0">&vellip;</td></tr>
+            <tr id="emb-row-28"><td style="padding:3px 7px;border:1px solid #e2e8f0">28</td><td style="padding:3px 7px;border:1px solid #e2e8f0">.31</td><td style="padding:3px 7px;border:1px solid #e2e8f0">-.12</td><td style="padding:3px 7px;border:1px solid #e2e8f0">.08</td><td style="padding:3px 7px;border:1px solid #e2e8f0">&hellip;</td><td style="padding:3px 7px;border:1px solid #e2e8f0">.84</td></tr>
+            <tr><td colspan="6" style="text-align:center;color:#94a3b8;padding:2px;font-size:.6rem;border:1px solid #e2e8f0">&vellip;</td></tr>
+            <tr><td style="padding:3px 7px;border:1px solid #e2e8f0;font-weight:600;color:#64748b">66</td><td style="padding:3px 7px;border:1px solid #e2e8f0;color:#64748b">-.09</td><td style="padding:3px 7px;border:1px solid #e2e8f0;color:#64748b">.37</td><td style="padding:3px 7px;border:1px solid #e2e8f0;color:#64748b">-.62</td><td style="padding:3px 7px;border:1px solid #e2e8f0;color:#94a3b8">&hellip;</td><td style="padding:3px 7px;border:1px solid #e2e8f0;color:#64748b">-.45</td></tr>
+          </tbody>
+        </table>
+      </div>
+      <div class="arrow" style="padding-top:36px">&rarr;</div>
+      <!-- Extracted vector -->
+      <div style="padding-top:36px">
+        <div style="font-size:.72rem;color:#64748b;font-weight:600;margin-bottom:6px">Row 28 extracted</div>
+        <div class="vec-pill">[.31, -.12, .08, .55, -.41, .84, …]</div>
+        <div style="font-size:.7rem;color:#94a3b8;margin-top:8px">256-dimensional vector<br>Same lookup for all 6 integers<br>→ 6 × 256-dim embeddings</div>
+      </div>
+    </div>
+
+    <div class="note"><strong>These vectors are learned.</strong> Early in training they are random. After training, characters that appear in similar contexts (e.g., vowels, common punctuation) end up with similar embedding vectors.</div>
+  </div>
+
+  <!-- ─── STEP 3: RNN ─── -->
+  <div class="step-view" id="step-3">
+    <div class="section-title">Step 3: Recurrent Layer (GRU)</div>
+    <div class="section-sub">One embedding enters at a time. The GRU outputs a hidden state that feeds back as the next step's state. With <code>return_sequences=True</code>, all hidden states are collected.</div>
+
+    <div style="max-width:520px;margin:0 auto;text-align:center">
+      <!-- Collected outputs -->
+      <div style="font-size:.68rem;color:#64748b;font-weight:600;margin-bottom:6px">Collected hidden states (all 6 will appear here)</div>
+      <div id="rnn-collected" style="display:flex;gap:6px;justify-content:center;min-height:34px;margin-bottom:14px;flex-wrap:wrap"></div>
+
+      <!-- Animation area -->
+      <div id="rnn-anim-area" style="position:relative;display:flex;align-items:center;justify-content:center;gap:14px;padding:14px 0">
+        <div style="text-align:center;min-width:72px">
+          <div style="font-size:.62rem;color:#64748b;font-weight:600;margin-bottom:4px">input</div>
+          <div id="rnn-input-slot" class="vec-pill rnn-slot" style="padding:4px 10px;font-size:.75rem;opacity:.3">emb(?)</div>
+          <div style="font-size:.58rem;color:#0891b2;margin-top:3px">256-dim</div>
+        </div>
+        <span style="color:#94a3b8;font-size:.75rem">+</span>
+        <div style="text-align:center;min-width:72px">
+          <div style="font-size:.62rem;color:#64748b;font-weight:600;margin-bottom:4px">state in</div>
+          <div id="rnn-state-slot" class="rnn-slot" style="padding:4px 10px;border-radius:5px;background:#f1f5f9;border:1px solid #94a3b8;color:#64748b;font:600 .75rem 'JetBrains Mono',monospace;transition:all .3s">∅</div>
+          <div style="font-size:.58rem;color:#059669;margin-top:3px">1024-dim</div>
+        </div>
+        <span class="arr-sm">&rarr;</span>
+        <div id="rnn-cell-box" style="padding:10px 20px;border-radius:10px;background:#059669;color:#fff;font:700 .95rem 'JetBrains Mono',monospace">GRU</div>
+        <span class="arr-sm">&rarr;</span>
+        <div style="text-align:center;min-width:52px">
+          <div style="font-size:.62rem;color:#64748b;font-weight:600;margin-bottom:4px">output / state out</div>
+          <div id="rnn-output-slot" class="h-pill rnn-slot" style="font-size:.75rem;opacity:.3">h?</div>
+          <div style="font-size:.58rem;color:#059669;margin-top:3px">1024-dim</div>
+        </div>
+      </div>
+
+      <!-- Feedback note -->
+      <div id="rnn-feedback-arrow" style="min-height:26px;opacity:0;transition:opacity .4s">
+        <span style="font-size:.68rem;color:#059669;font-weight:600">↩ output = next step's state input</span>
+      </div>
+
+      <!-- Log -->
+      <div id="rnn-log" style="margin-top:10px;font-size:.7rem;color:#475569;text-align:left;max-width:380px;margin-left:auto;margin-right:auto;font-family:'JetBrains Mono',monospace;line-height:1.8"></div>
+
+      <!-- Status -->
+      <div id="rnn-status" style="text-align:center;margin-top:8px;font-size:.78rem;color:#059669;font-weight:500;min-height:22px"></div>
+    </div>
+
+    <div class="note"><strong>The output and state are the same vector.</strong> <code>hₜ</code> both goes upward to Dense(67) (so we get a prediction) and rightward into the next GRU call as the new state. <code>return_sequences=True</code> gives us all 6 vectors, not just the last one.</div>
+  </div>
+
+  <!-- ─── STEP 4: DENSE + SOFTMAX ─── -->
+  <div class="step-view" id="step-4">
+    <div class="section-title">Step 4: Dense(67) + Softmax — One Per Position</div>
+    <div class="section-sub">Each of the 6 collected hidden states independently passes through the same Dense layer. The result is 6 separate 67-class probability distributions.</div>
+
+    <div style="max-width:580px">
+      <!-- 6 parallel rows -->
+      <div style="display:flex;flex-direction:column;gap:4px">
+        <div class="dense-row">
+          <div style="width:50px;text-align:right;font-family:'JetBrains Mono',monospace;font-size:.72rem;color:#047857;font-weight:600">h₁</div>
+          <span class="arr-sm">&rarr;</span>
+          <div class="dense-mini" style="background:#f5f3ff;border:1px solid #7c3aed;color:#6d28d9">Dense(67)+Softmax</div>
+          <span class="arr-sm">&rarr;</span>
+          <div class="mini-bars"><div class="mini-bar" style="height:4px"></div><div class="mini-bar" style="height:7px"></div><div class="mini-bar tall"></div><div class="mini-bar" style="height:6px"></div><div class="mini-bar" style="height:3px"></div><div class="mini-bar" style="height:5px"></div></div>
+          <span class="arr-sm">&rarr;</span>
+          <div class="pred-pill">i</div>
+          <span style="font-size:.68rem;color:#64748b">&larr; predicted next char</span>
+        </div>
+        <div class="dense-row">
+          <div style="width:50px;text-align:right;font-family:'JetBrains Mono',monospace;font-size:.72rem;color:#047857;font-weight:600">h₂</div>
+          <span class="arr-sm">&rarr;</span>
+          <div class="dense-mini" style="background:#f5f3ff;border:1px solid #7c3aed;color:#6d28d9">Dense(67)+Softmax</div>
+          <span class="arr-sm">&rarr;</span>
+          <div class="mini-bars"><div class="mini-bar" style="height:5px"></div><div class="mini-bar tall"></div><div class="mini-bar" style="height:4px"></div><div class="mini-bar" style="height:8px"></div><div class="mini-bar" style="height:3px"></div><div class="mini-bar" style="height:6px"></div></div>
+          <span class="arr-sm">&rarr;</span>
+          <div class="pred-pill">n</div>
+          <span style="font-size:.68rem;color:#64748b">&larr; predicted next char</span>
+        </div>
+        <div class="dense-row">
+          <div style="width:50px;text-align:right;font-family:'JetBrains Mono',monospace;font-size:.72rem;color:#047857;font-weight:600">h₃</div>
+          <span class="arr-sm">&rarr;</span>
+          <div class="dense-mini" style="background:#f5f3ff;border:1px solid #7c3aed;color:#6d28d9">Dense(67)+Softmax</div>
+          <span class="arr-sm">&rarr;</span>
+          <div class="mini-bars"><div class="mini-bar" style="height:6px"></div><div class="mini-bar" style="height:3px"></div><div class="mini-bar" style="height:8px"></div><div class="mini-bar tall"></div><div class="mini-bar" style="height:4px"></div><div class="mini-bar" style="height:2px"></div></div>
+          <span class="arr-sm">&rarr;</span>
+          <div class="pred-pill">g</div>
+          <span style="font-size:.68rem;color:#64748b">&larr; predicted next char</span>
+        </div>
+        <div class="dense-row">
+          <div style="width:50px;text-align:right;font-family:'JetBrains Mono',monospace;font-size:.72rem;color:#047857;font-weight:600">h₄</div>
+          <span class="arr-sm">&rarr;</span>
+          <div class="dense-mini" style="background:#f5f3ff;border:1px solid #7c3aed;color:#6d28d9">Dense(67)+Softmax</div>
+          <span class="arr-sm">&rarr;</span>
+          <div class="mini-bars"><div class="mini-bar tall"></div><div class="mini-bar" style="height:5px"></div><div class="mini-bar" style="height:7px"></div><div class="mini-bar" style="height:3px"></div><div class="mini-bar" style="height:9px"></div><div class="mini-bar" style="height:4px"></div></div>
+          <span class="arr-sm">&rarr;</span>
+          <div class="pred-pill">&nbsp;</div>
+          <span style="font-size:.68rem;color:#64748b">&larr; predicted next char (space)</span>
+        </div>
+        <div class="dense-row">
+          <div style="width:50px;text-align:right;font-family:'JetBrains Mono',monospace;font-size:.72rem;color:#047857;font-weight:600">h₅</div>
+          <span class="arr-sm">&rarr;</span>
+          <div class="dense-mini" style="background:#f5f3ff;border:1px solid #7c3aed;color:#6d28d9">Dense(67)+Softmax</div>
+          <span class="arr-sm">&rarr;</span>
+          <div class="mini-bars"><div class="mini-bar" style="height:4px"></div><div class="mini-bar" style="height:8px"></div><div class="mini-bar" style="height:3px"></div><div class="mini-bar" style="height:6px"></div><div class="mini-bar tall"></div><div class="mini-bar" style="height:5px"></div></div>
+          <span class="arr-sm">&rarr;</span>
+          <div class="pred-pill">R</div>
+          <span style="font-size:.68rem;color:#64748b">&larr; predicted next char</span>
+        </div>
+        <div class="dense-row">
+          <div style="width:50px;text-align:right;font-family:'JetBrains Mono',monospace;font-size:.72rem;color:#047857;font-weight:600">h₆</div>
+          <span class="arr-sm">&rarr;</span>
+          <div class="dense-mini" style="background:#f5f3ff;border:1px solid #7c3aed;color:#6d28d9">Dense(67)+Softmax</div>
+          <span class="arr-sm">&rarr;</span>
+          <div class="mini-bars"><div class="mini-bar" style="height:5px"></div><div class="mini-bar" style="height:9px"></div><div class="mini-bar tall"></div><div class="mini-bar" style="height:4px"></div><div class="mini-bar" style="height:7px"></div><div class="mini-bar" style="height:3px"></div></div>
+          <span class="arr-sm">&rarr;</span>
+          <div class="pred-pill">i</div>
+          <span style="font-size:.68rem;color:#64748b">&larr; predicted next char</span>
+        </div>
+      </div>
+
+      <div style="margin-top:12px;padding:8px 14px;background:#f0fdf4;border:1px solid #86efac;border-radius:6px;font-size:.78rem;color:#15803d;font-weight:600">
+        All 6 predictions made in one forward pass — no loops needed at training time.
+      </div>
+    </div>
+
+    <div class="note"><strong>Same Dense layer, applied 6 times.</strong> The weight matrix is shared across positions. Only the input (the hidden state) differs per row. This is what the shape <code>(batch, 100, 67)</code> means.</div>
+  </div>
+
+  <!-- ─── STEP 5: LOSS ─── -->
+  <div class="step-view" id="step-5">
+    <div class="section-title">Step 5: Loss &amp; Backpropagation</div>
+    <div class="section-sub">At every position, the predicted character is compared against the actual next character. Cross-entropy loss is computed and averaged. Gradients flow backward to update all weights.</div>
+
+    <div style="max-width:540px">
+      <!-- Input / Target comparison -->
+      <div style="display:flex;gap:20px;flex-wrap:wrap;margin-bottom:16px">
+        <div>
+          <div style="font-size:.72rem;font-weight:600;color:#64748b;margin-bottom:6px">Predictions (argmax of softmax)</div>
+          <div style="display:flex;gap:5px">
+            <div class="pred-pill">i</div><div class="pred-pill">n</div>
+            <div class="pred-pill">g</div><div class="pred-pill">&nbsp;</div>
+            <div class="pred-pill">R</div><div class="pred-pill">i</div>
+          </div>
+        </div>
+        <div>
+          <div style="font-size:.72rem;font-weight:600;color:#64748b;margin-bottom:6px">Targets (input shifted by 1)</div>
+          <div style="display:flex;gap:5px">
+            <div class="target-pill">i</div><div class="target-pill">n</div>
+            <div class="target-pill">g</div><div class="target-pill">&nbsp;</div>
+            <div class="target-pill">R</div><div class="target-pill">i</div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Comparison rows -->
+      <div style="display:flex;flex-direction:column;gap:4px;margin-bottom:16px">
+        <div class="compare-row"><div class="pred-pill">i</div><span>&harr;</span><div class="target-pill">i</div><span class="check">✓</span><span style="font-size:.75rem;color:#059669">match → low loss</span></div>
+        <div class="compare-row"><div class="pred-pill">n</div><span>&harr;</span><div class="target-pill">n</div><span class="check">✓</span><span style="font-size:.75rem;color:#059669">match → low loss</span></div>
+        <div class="compare-row"><div class="pred-pill">g</div><span>&harr;</span><div class="target-pill">g</div><span class="check">✓</span><span style="font-size:.75rem;color:#059669">match → low loss</span></div>
+        <div class="compare-row"><div class="pred-pill">&nbsp;</div><span>&harr;</span><div class="target-pill">&nbsp;</div><span class="check">✓</span><span style="font-size:.75rem;color:#059669">match → low loss</span></div>
+        <div class="compare-row"><div class="pred-pill">R</div><span>&harr;</span><div class="target-pill">R</div><span class="check">✓</span><span style="font-size:.75rem;color:#059669">match → low loss</span></div>
+        <div class="compare-row"><div class="pred-pill">i</div><span>&harr;</span><div class="target-pill">i</div><span class="check">✓</span><span style="font-size:.75sem;color:#059669">match → low loss</span></div>
+      </div>
+
+      <!-- Loss formula -->
+      <div class="formula">
+        𝓛 = − (1/T) Σₜ log P(target_t | input₁..ₜ)
+      </div>
+
+      <!-- Backprop note -->
+      <div style="margin-top:14px;padding:10px 14px;background:#fff0f0;border-left:3px solid #ef4444;border-radius:0 6px 6px 0;font-size:.8rem;color:#991b1b;line-height:1.5">
+        <strong>Backprop updates all weights simultaneously:</strong> gradients flow backward through Dense → GRU → Embedding. After 20 epochs, all three layers encode learned Shakespeare patterns.
+      </div>
+    </div>
+  </div>
+
+  </div><!-- end left-panel -->
+
+  <!-- ════ RIGHT PANEL: Code ════ -->
+  <div id="right-panel">
+    <div id="code-header">
+      <div id="code-header-title">10.3 — Generative Text with Shakespeare.ipynb</div>
+      <div id="code-header-badge">Notebook Code</div>
+    </div>
+    <div id="code-body">
+
+      <!-- Code Section 0: Overview -->
+      <div class="code-section active" id="code-0">
+        <div class="code-step-label">Full pipeline at a glance</div>
+        <div class="code-block"><span class="code-line code-cm"># ── 1. Prepare the text ─────────────────────────</span>
+<span class="code-line"><span class="code-const">features</span> = list(split_input(shakespeare[:-<span class="code-num">1</span>], <span class="code-num">100</span>))</span>
+<span class="code-line"><span class="code-const">labels</span>   = list(split_input(shakespeare[<span class="code-num">1</span>:],  <span class="code-num">100</span>))  <span class="code-cm"># ← shifted</span></span>
+<span class="code-line"></span>
+<span class="code-line code-cm"># ── 2. Char → integer ───────────────────────────</span>
+<span class="code-line">tokenizer = layers.<span class="code-fn">TextVectorization</span>(</span>
+<span class="code-line">    split=<span class="code-str">"character"</span>, output_sequence_length=<span class="code-num">100</span>)</span>
+<span class="code-line">tokenizer.<span class="code-fn">adapt</span>(dataset.<span class="code-fn">map</span>(<span class="code-kw">lambda</span> x, y: x))</span>
+<span class="code-line"><span class="code-cm"># 67 unique characters total</span></span>
+<span class="code-line"></span>
+<span class="code-line code-cm"># ── 3. Build the model ──────────────────────────</span>
+<span class="code-line hl">inputs  = layers.<span class="code-fn">Input</span>(shape=(<span class="code-num">100</span>,), dtype=<span class="code-str">"int"</span>)</span>
+<span class="code-line hl">x       = layers.<span class="code-fn">Embedding</span>(<span class="code-num">67</span>, <span class="code-num">256</span>)(inputs)         <span class="code-cm"># 67×256</span></span>
+<span class="code-line hl">x       = layers.<span class="code-fn">GRU</span>(<span class="code-num">1024</span>, return_sequences=<span class="code-kw">True</span>)(x)  <span class="code-cm"># all h_t</span></span>
+<span class="code-line hl">outputs = layers.<span class="code-fn">Dense</span>(<span class="code-num">67</span>, activation=<span class="code-str">"softmax"</span>)(x)  <span class="code-cm"># 67 probs</span></span>
+<span class="code-line">model   = keras.<span class="code-fn">Model</span>(inputs, outputs)</span>
+<span class="code-line"></span>
+<span class="code-line code-cm"># ── 4. Compile and train ─────────────────────────</span>
+<span class="code-line">model.<span class="code-fn">compile</span>(optimizer=<span class="code-str">"adam"</span>,</span>
+<span class="code-line">              loss=<span class="code-str">"sparse_categorical_crossentropy"</span>)</span>
+<span class="code-line">model.<span class="code-fn">fit</span>(training_data, epochs=<span class="code-num">20</span>)</span>
+</div>
+      </div>
+
+      <!-- Code Section 1: Input -->
+      <div class="code-section" id="code-1">
+        <div class="code-step-label">Step 1 — input preparation</div>
+        <div class="code-block"><span class="code-line code-cm"># ── Split text into 100-char windows ────────────</span>
+<span class="code-line"><span class="code-cm"># features: shakespeare[:-1]  (chars 0 … N-1)</span></span>
+<span class="code-line"><span class="code-cm"># labels:   shakespeare[ 1:]  (chars 1 … N)  ← offset</span></span>
+<span class="code-line hl">features = list(split_input(shakespeare[:-<span class="code-num">1</span>], <span class="code-num">100</span>))</span>
+<span class="code-line hl">labels   = list(split_input(shakespeare[<span class="code-num">1</span>:],  <span class="code-num">100</span>))</span>
+<span class="code-line"></span>
+<span class="code-line code-cm"># ── TextVectorization: char → integer ───────────</span>
+<span class="code-line">tokenizer = layers.<span class="code-fn">TextVectorization</span>(</span>
+<span class="code-line hl">    standardize=<span class="code-kw">None</span>,    <span class="code-cm"># keep case & punctuation</span></span>
+<span class="code-line hl">    split=<span class="code-str">"character"</span>,   <span class="code-cm"># character-level</span></span>
+<span class="code-line">    output_sequence_length=<span class="code-num">100</span>,</span>
+<span class="code-line">)</span>
+<span class="code-line">tokenizer.<span class="code-fn">adapt</span>(dataset.<span class="code-fn">map</span>(<span class="code-kw">lambda</span> x, y: x))</span>
+<span class="code-line">vocabulary_size = tokenizer.<span class="code-fn">vocabulary_size</span>()  <span class="code-cm"># 67</span></span>
+<span class="code-line"></span>
+<span class="code-line code-cm"># ── Apply to dataset ────────────────────────────</span>
+<span class="code-line">dataset = dataset.<span class="code-fn">map</span>(</span>
+<span class="code-line">    <span class="code-kw">lambda</span> x, y: (tokenizer(x), tokenizer(y)),</span>
+<span class="code-line">)</span>
+<span class="code-line"><span class="code-cm"># Each obs: (100 integers, 100 integers)</span></span>
+<span class="code-line">training_data = dataset.<span class="code-fn">batch</span>(<span class="code-num">64</span>).<span class="code-fn">cache</span>().<span class="code-fn">shuffle</span>(<span class="code-num">10_000</span>)</span>
+</div>
+      </div>
+
+      <!-- Code Section 2: Embedding -->
+      <div class="code-section" id="code-2">
+        <div class="code-step-label">Step 2 — embedding lookup</div>
+        <div class="code-block"><span class="code-line code-cm"># Model receives integer token IDs</span>
+<span class="code-line">inputs = layers.<span class="code-fn">Input</span>(</span>
+<span class="code-line">    shape=(sequence_length,),  <span class="code-cm"># 100 integers</span></span>
+<span class="code-line">    dtype=<span class="code-str">"int"</span>,</span>
+<span class="code-line">)</span>
+<span class="code-line"></span>
+<span class="code-line code-cm"># Embedding: int → 256-dim dense vector ─────────</span>
+<span class="code-line"><span class="code-cm"># Each integer is a ROW INDEX into this table</span></span>
+<span class="code-line"><span class="code-cm">#   int 28  →  retrieve row 28  →  256-dim vector</span></span>
+<span class="code-line hl">x = layers.<span class="code-fn">Embedding</span>(</span>
+<span class="code-line hl">    input_dim=<span class="code-num">67</span>,    <span class="code-cm"># vocabulary size</span></span>
+<span class="code-line hl">    output_dim=<span class="code-num">256</span>,  <span class="code-cm"># embedding dimension</span></span>
+<span class="code-line hl">)(inputs)</span>
+<span class="code-line"><span class="code-cm"># Output shape: (batch, 100, 256)</span></span>
+<span class="code-line"></span>
+<span class="code-line code-cm"># The 67×256 table is LEARNED during training.</span>
+<span class="code-line code-cm"># Initially random; after training, similar chars</span>
+<span class="code-line code-cm"># have similar vectors (close in embedding space).</span>
+</div>
+      </div>
+
+      <!-- Code Section 3: RNN -->
+      <div class="code-section" id="code-3">
+        <div class="code-step-label">Step 3 — GRU recurrent layer</div>
+        <div class="code-block"><span class="code-line code-cm"># Input: (batch, 100, 256)  — embeddings</span>
+<span class="code-line code-cm"># At each timestep t:</span>
+<span class="code-line code-cm">#   h_t = GRU(embedding_t, h_{t-1})</span>
+<span class="code-line code-cm">#   h_t → output (to Dense)  AND  new state</span>
+<span class="code-line"></span>
+<span class="code-line hl">x = layers.<span class="code-fn">GRU</span>(</span>
+<span class="code-line hl">    <span class="code-num">1024</span>,                    <span class="code-cm"># hidden units</span></span>
+<span class="code-line hl">    return_sequences=<span class="code-kw">True</span>,  <span class="code-cm"># ← collect ALL h_t</span></span>
+<span class="code-line hl">)(x)</span>
+<span class="code-line"><span class="code-cm"># Output shape: (batch, 100, 1024)</span></span>
+<span class="code-line"></span>
+<span class="code-line code-cm"># return_sequences=True  → h_1, h_2, …, h_100</span>
+<span class="code-line code-cm"># return_sequences=False → only h_100 (inference)</span>
+<span class="code-line"></span>
+<span class="code-line code-cm"># The same 1024-dim vector:</span>
+<span class="code-line code-cm">#   → passed RIGHT  as the next GRU call's state</span>
+<span class="code-line code-cm">#   → passed DOWN   into Dense(67) for prediction</span>
+<span class="code-line"><span class="code-cm"># These are not separate tensors — it is one h_t.</span></span>
+<span class="code-line"></span>
+<span class="code-line">x = layers.<span class="code-fn">Dropout</span>(<span class="code-num">0.1</span>)(x)  <span class="code-cm"># light regularization</span></span>
+</div>
+      </div>
+
+      <!-- Code Section 4: Dense -->
+      <div class="code-section" id="code-4">
+        <div class="code-step-label">Step 4 — Dense + Softmax</div>
+        <div class="code-block"><span class="code-line code-cm"># Input: (batch, 100, 1024) — all hidden states</span>
+<span class="code-line code-cm"># Dense applied INDEPENDENTLY at every position</span>
+<span class="code-line code-cm">#</span>
+<span class="code-line code-cm">#   h_1 → Dense → softmax → 67 probs → argmax → ĉ₁</span>
+<span class="code-line code-cm">#   h_2 → Dense → softmax → 67 probs → argmax → ĉ₂</span>
+<span class="code-line code-cm">#   …</span>
+<span class="code-line code-cm">#   h_100 → Dense → softmax → 67 probs → argmax → ĉ₁₀₀</span>
+<span class="code-line"></span>
+<span class="code-line hl">outputs = layers.<span class="code-fn">Dense</span>(</span>
+<span class="code-line hl">    vocabulary_size,          <span class="code-cm"># 67</span></span>
+<span class="code-line hl">    activation=<span class="code-str">"softmax"</span>,  <span class="code-cm"># 67-class distribution</span></span>
+<span class="code-line hl">)(x)</span>
+<span class="code-line"><span class="code-cm"># Output shape: (batch, 100, 67)</span></span>
+<span class="code-line"></span>
+<span class="code-line code-cm"># Same Dense weights reused across all 100 positions.</span>
+<span class="code-line code-cm"># All 100 predictions happen in one forward pass.</span>
+<span class="code-line"></span>
+<span class="code-line">model = keras.<span class="code-fn">Model</span>(inputs, outputs)</span>
+<span class="code-line">model.<span class="code-fn">summary</span>()</span>
+<span class="code-line"><span class="code-cm"># Embedding params:    67 × 256     =  17,152</span></span>
+<span class="code-line"><span class="code-cm"># GRU params:   3 × (256+1024) × 1024 = 3,938,304</span></span>
+<span class="code-line"><span class="code-cm"># Dense params: 1024 × 67 + 67       =    68,675</span></span>
+</div>
+      </div>
+
+      <!-- Code Section 5: Loss -->
+      <div class="code-section" id="code-5">
+        <div class="code-step-label">Step 5 — loss & training</div>
+        <div class="code-block"><span class="code-line code-cm"># Compile: specify loss function and optimizer ──</span>
+<span class="code-line">model.<span class="code-fn">compile</span>(</span>
+<span class="code-line">    optimizer=<span class="code-str">"adam"</span>,</span>
+<span class="code-line hl">    loss=<span class="code-str">"sparse_categorical_crossentropy"</span>,</span>
+<span class="code-line hl">    <span class="code-cm">#      ↑ targets are integer IDs, not one-hot</span></span>
+<span class="code-line">    metrics=[<span class="code-str">"sparse_categorical_accuracy"</span>],</span>
+<span class="code-line">)</span>
+<span class="code-line"></span>
+<span class="code-line code-cm"># labels = input shifted by 1 character</span>
+<span class="code-line code-cm"># "First Citizen:"  →  target: "irst Citizen:B"</span>
+<span class="code-line code-cm"># Loss averaged across ALL positions × ALL batches</span>
+<span class="code-line"></span>
+<span class="code-line hl">model.<span class="code-fn">fit</span>(training_data, epochs=<span class="code-num">20</span>)</span>
+<span class="code-line"></span>
+<span class="code-line"><span class="code-cm"># Epoch  1: loss 0.79  (near-random predictions)</span></span>
+<span class="code-line"><span class="code-cm"># Epoch 20: loss 0.65  (learned Shakespeare prose)</span></span>
+<span class="code-line"></span>
+<span class="code-line code-cm"># Backprop updates all weights simultaneously:</span>
+<span class="code-line code-cm">#   Dense weights  ← predict char distributions</span>
+<span class="code-line code-cm">#   GRU weights    ← build useful hidden states</span>
+<span class="code-line code-cm">#   Embedding rows ← represent chars well</span>
+</div>
+      </div>
+
+    </div><!-- end code-body -->
+  </div><!-- end right-panel -->
+
+</div><!-- end main-content -->
+
+<script>
+// ── CONFIGURATION ──────────────────────────────────────────────
+const SECTIONS = 6;
+let step = 0;
+let conversation = null;
+let walkthroughActive = false;
+
+// Human-readable labels for each step
+const stepLabels = [
+  "Step 1 — Overview: The Full Training Pipeline",
+  "Step 2 — Input Preparation: Text → Integers",
+  "Step 3 — Embedding Layer: Integer → 256-dim Vector",
+  "Step 4 — GRU Recurrent Layer: Building Hidden States",
+  "Step 5 — Dense + Softmax: One Prediction per Position",
+  "Step 6 — Loss & Backpropagation"
+];
+
+const descriptions = [
+  "The full CharRNN training pipeline: raw text in, predicted next character at every position.",
+  "Text is split by character, mapped to integers (67 unique chars), and offset by 1 to create input/target pairs.",
+  "Each integer is a row index into a learned 67×256 embedding table — integer 28 retrieves row 28.",
+  "The GRU processes one embedding per step; each hidden state hₜ is both the output and the next step's state input.",
+  "Each of the 6 hidden states independently feeds its own Dense(67)+Softmax row — all 6 predictions in one pass.",
+  "Cross-entropy loss at every position; backprop updates Embedding, GRU, and Dense weights simultaneously."
+];
+
+// ── HELPERS ────────────────────────────────────────────────────
+function showStep(s) {
+  document.querySelectorAll('.step-view').forEach((el,i) => {
+    el.classList.toggle('active', i === s);
+  });
+  document.querySelectorAll('.code-section').forEach((el,i) => {
+    el.classList.toggle('active', i === s);
+  });
+  document.getElementById('step-counter').textContent = 'Step ' + (s+1) + ' of ' + SECTIONS;
+  document.getElementById('desc-bar').textContent = descriptions[s];
+  document.getElementById('btn-prev').disabled = (s === 0);
+  document.getElementById('btn-next').disabled = (s === SECTIONS - 1);
+  // Scroll code panel to top when step changes
+  document.getElementById('code-body').scrollTop = 0;
+}
+
+function updateUI() {
+  showStep(step);
+  if (step === 2) setTimeout(animateEmbedding, 400);
+  if (step === 3) setTimeout(function(){ resetRNN(); animateRNN(); }, 400);
+}
+
+// ── WALKTHROUGH (ElevenLabs Conversational AI) ─────────────────
+async function startWalkthrough() {
+  if (walkthroughActive) return;
+  const Conversation = window.ElevenLabsClient && window.ElevenLabsClient.Conversation
+    ? window.ElevenLabsClient.Conversation
+    : (window.client && window.client.Conversation)
+      ? window.client.Conversation
+      : null;
+
+  // Try common export names from the UMD bundle
+  const ConvClass = Conversation
+    || (window.ElevenLabs && window.ElevenLabs.Conversation)
+    || (window.elevenlabs && window.elevenlabs.Conversation)
+    || (window.Elevenlabs && window.Elevenlabs.Conversation);
+
+  if (!ConvClass) {
+    alert('ElevenLabs SDK not loaded yet — try again in a moment.');
+    return;
+  }
+
+  setWalkthroughUI('connecting');
+  try {
+    conversation = await ConvClass.startSession({
+      agentId: 'agent_7401kn5cbedfesj9851hnsdn50jw',
+      dynamicVariables: {
+        current_step: stepLabels[step]
+      },
+      clientTools: {
+        navigate: async ({ action, step_number }) => {
+          if (action === 'next' && step < SECTIONS - 1) { step++; updateUI(); }
+          else if (action === 'previous' && step > 0) { step--; updateUI(); }
+          else if (action === 'goto' && step_number !== undefined) {
+            // agent passes 1-based step numbers matching the screen labels
+            const idx = Math.min(Math.max(1, parseInt(step_number)), SECTIONS) - 1;
+            step = idx; updateUI();
+          }
+          return 'Done. The screen now shows: ' + stepLabels[step] + '. Please narrate this step now.';
+        }
+      },
+      onConnect: () => { walkthroughActive = true; setWalkthroughUI('listening'); },
+      onDisconnect: () => { walkthroughActive = false; conversation = null; setWalkthroughUI('idle'); },
+      onModeChange: ({ mode }) => { if (walkthroughActive) setWalkthroughUI(mode); },
+      onError: (err) => { console.error('Agent error:', err); setWalkthroughUI('idle'); }
+    });
+  } catch(e) {
+    console.error('Could not start walkthrough:', e);
+    setWalkthroughUI('idle');
+  }
+}
+
+async function endWalkthrough() {
+  if (conversation) { await conversation.endSession(); }
+  walkthroughActive = false; conversation = null;
+  setWalkthroughUI('idle');
+}
+
+function setWalkthroughUI(state) {
+  const bar = document.getElementById('walkthrough-bar');
+  const statusDot = document.getElementById('wt-dot');
+  const statusText = document.getElementById('wt-status');
+  const btnStart = document.getElementById('btn-walkthrough');
+
+  if (state === 'idle') {
+    bar.style.display = 'none';
+    btnStart.disabled = false;
+    btnStart.textContent = '▶ Start Walkthrough';
+  } else if (state === 'connecting') {
+    bar.style.display = 'flex';
+    statusDot.className = 'wt-dot connecting';
+    statusText.textContent = 'Connecting…';
+    btnStart.disabled = true;
+    btnStart.textContent = 'Connecting…';
+  } else if (state === 'listening') {
+    bar.style.display = 'flex';
+    statusDot.className = 'wt-dot listening';
+    statusText.textContent = 'Listening for your question…';
+    btnStart.disabled = true;
+  } else if (state === 'speaking') {
+    bar.style.display = 'flex';
+    statusDot.className = 'wt-dot speaking';
+    statusText.textContent = 'Prof. Burtch is speaking…';
+    btnStart.disabled = true;
+  }
+}
+
+// ── BUTTONS ────────────────────────────────────────────────────
+document.getElementById('btn-prev').addEventListener('click', () => {
+  if (step > 0) { step--; updateUI(); }
+});
+document.getElementById('btn-next').addEventListener('click', () => {
+  if (step < SECTIONS-1) { step++; updateUI(); }
+});
+document.getElementById('btn-reset').addEventListener('click', () => {
+  step = 0;
+  updateUI();
+});
+
+// ── KEYBOARD ───────────────────────────────────────────────────
+document.addEventListener('keydown', e => {
+  if (e.key === 'ArrowRight' || e.key === ' ') {
+    e.preventDefault();
+    if (step < SECTIONS-1) { step++; updateUI(); }
+  }
+  if (e.key === 'ArrowLeft') {
+    e.preventDefault();
+    if (step > 0) { step--; updateUI(); }
+  }
+  if (e.key === 'r' || e.key === 'R') {
+    document.getElementById('btn-reset').click();
+  }
+});
+
+// ── EMBEDDING ANIMATION ────────────────────────────────────────
+function animateEmbedding() {
+  const row = document.getElementById('emb-row-28');
+  if (!row) return;
+  row.style.background = '#fef9c3';
+  setTimeout(() => {
+    row.style.background = '#a5f3fc';
+    setTimeout(() => { row.style.background = '#fef9c3'; }, 600);
+  }, 300);
+}
+
+// ── RNN ANIMATION ─────────────────────────────────────────────
+const chars = ['K','i','n','g',' ','R'];
+let rnnRunning = false;
+
+function resetRNN() {
+  document.getElementById('rnn-collected').innerHTML = '';
+  document.getElementById('rnn-input-slot').textContent = 'emb(?)';
+  document.getElementById('rnn-input-slot').style.opacity = '.3';
+  document.getElementById('rnn-state-slot').textContent = '∅';
+  document.getElementById('rnn-state-slot').style.background = '#f1f5f9';
+  document.getElementById('rnn-state-slot').style.color = '#64748b';
+  document.getElementById('rnn-output-slot').textContent = 'h?';
+  document.getElementById('rnn-output-slot').style.opacity = '.3';
+  document.getElementById('rnn-cell-box').style.boxShadow = '';
+  document.getElementById('rnn-feedback-arrow').style.opacity = '0';
+  document.getElementById('rnn-log').innerHTML = '';
+  document.getElementById('rnn-status').textContent = '';
+  rnnRunning = false;
+}
+
+function animateRNN() {
+  if (rnnRunning) return;
+  rnnRunning = true;
+  let i = 0;
+  const inputSlot  = document.getElementById('rnn-input-slot');
+  const stateSlot  = document.getElementById('rnn-state-slot');
+  const outputSlot = document.getElementById('rnn-output-slot');
+  const cellBox    = document.getElementById('rnn-cell-box');
+  const feedback   = document.getElementById('rnn-feedback-arrow');
+  const log        = document.getElementById('rnn-log');
+  const status     = document.getElementById('rnn-status');
+  const collected  = document.getElementById('rnn-collected');
+
+  function doStep() {
+    if (i >= chars.length) {
+      status.textContent = '✓ All 6 hidden states collected — ready for Dense layer';
+      rnnRunning = false;
+      return;
+    }
+    const ch = chars[i];
+    status.textContent = 'Processing token ' + (i+1) + ' / ' + chars.length + ' …';
+
+    // Phase 1: show input + state (0ms)
+    inputSlot.textContent = 'emb("' + (ch === ' ' ? '⎵' : ch) + '")';
+    inputSlot.style.opacity = '1';
+    const prevState = i === 0 ? '∅ (zeros)' : 'h' + i;
+    stateSlot.textContent = prevState;
+    stateSlot.style.background = i === 0 ? '#f1f5f9' : '#ecfdf5';
+    stateSlot.style.color = i === 0 ? '#64748b' : '#047857';
+    stateSlot.style.border = i === 0 ? '1px solid #94a3b8' : '2px solid #059669';
+    outputSlot.style.opacity = '.3';
+    feedback.style.opacity = '0';
+
+    // Phase 2: GRU cell glows (600ms)
+    setTimeout(() => {
+      cellBox.style.boxShadow = '0 0 20px rgba(5,150,105,.55)';
+    }, 600);
+
+    // Phase 3: output appears + add to collected row (1200ms)
+    setTimeout(() => {
+      const hLabel = 'h' + (i+1);
+      outputSlot.textContent = hLabel;
+      outputSlot.style.opacity = '1';
+      cellBox.style.boxShadow = '';
+
+      // Add to collected
+      const pill = document.createElement('div');
+      pill.className = 'h-pill';
+      pill.style.fontSize = '.72rem';
+      pill.style.animation = 'fadeInUp .35s ease both';
+      pill.textContent = hLabel;
+      collected.appendChild(pill);
+
+      // Log line
+      const line = document.createElement('div');
+      line.textContent = hLabel + ' = GRU(emb("' + (ch === ' ' ? '⎵' : ch) + '"), ' + prevState + ')';
+      line.style.color = '#059669';
+      log.appendChild(line);
+      if (log.children.length > 6) log.removeChild(log.firstChild);
+    }, 1200);
+
+    // Phase 4: feedback arrow flashes (1800ms)
+    setTimeout(() => {
+      if (i < chars.length - 1) feedback.style.opacity = '1';
+    }, 1800);
+
+    // Phase 5: reset slots and advance (2400ms + 500ms pause)
+    setTimeout(() => {
+      outputSlot.style.opacity = '.3';
+      inputSlot.style.opacity = '.3';
+      feedback.style.opacity = '0';
+      i++;
+      setTimeout(doStep, 500);
+    }, 2400);
+  }
+  doStep();
+}
+
+// ── INIT ───────────────────────────────────────────────────────
+updateUI();
+</script>
+
+</body>
+</html>
