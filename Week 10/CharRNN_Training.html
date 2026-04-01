@@ -278,7 +278,7 @@ code,.mono{font-family:'Courier New',Courier,monospace}
 
   <!-- ─── STEP 0: OVERVIEW ─── -->
   <div class="step-view active" id="step-0">
-    <div class="section-title">Overview: The Full Training Pipeline</div>
+    <div class="section-title">Step 1: Overview — The Full Training Pipeline</div>
     <div class="section-sub">Given every character seen so far, the model predicts the next one. Training repeats this over millions of positions across Shakespeare's complete works.</div>
 
     <div class="pipeline">
@@ -333,7 +333,7 @@ code,.mono{font-family:'Courier New',Courier,monospace}
 
   <!-- ─── STEP 1: INPUT ─── -->
   <div class="step-view" id="step-1">
-    <div class="section-title">Step 1: Text → Integers (Preprocessing)</div>
+    <div class="section-title">Step 2: Text → Integers (Preprocessing)</div>
     <div class="section-sub">Shakespeare text is split into characters and mapped to unique integers before entering the model.</div>
 
     <div class="flow" style="gap:20px;align-items:flex-start">
@@ -383,7 +383,7 @@ grace?</div>
 
   <!-- ─── STEP 2: EMBEDDING ─── -->
   <div class="step-view" id="step-2">
-    <div class="section-title">Step 2: Embedding Layer</div>
+    <div class="section-title">Step 3: Embedding Layer</div>
     <div class="section-sub">Each integer is a row index into a learned 67 × 256 lookup table. Integer 28 (representing "K") retrieves row 28 — a 256-dimensional dense vector.</div>
 
     <div class="flow" style="gap:20px;align-items:flex-start">
@@ -434,7 +434,7 @@ grace?</div>
 
   <!-- ─── STEP 3: RNN ─── -->
   <div class="step-view" id="step-3">
-    <div class="section-title">Step 3: Recurrent Layer (GRU)</div>
+    <div class="section-title">Step 4: Recurrent Layer (GRU)</div>
     <div class="section-sub">One embedding enters at a time. The GRU outputs a hidden state that feeds back as the next step's state. With <code>return_sequences=True</code>, all hidden states are collected.</div>
 
     <div style="max-width:520px;margin:0 auto;text-align:center">
@@ -482,7 +482,7 @@ grace?</div>
 
   <!-- ─── STEP 4: DENSE + SOFTMAX ─── -->
   <div class="step-view" id="step-4">
-    <div class="section-title">Step 4: Dense(67) + Softmax — One Per Position</div>
+    <div class="section-title">Step 5: Dense(67) + Softmax — One Per Position</div>
     <div class="section-sub">Each of the 6 collected hidden states independently passes through the same Dense layer. The result is 6 separate 67-class probability distributions.</div>
 
     <div style="max-width:580px">
@@ -560,7 +560,7 @@ grace?</div>
 
   <!-- ─── STEP 5: LOSS ─── -->
   <div class="step-view" id="step-5">
-    <div class="section-title">Step 5: Loss &amp; Backpropagation</div>
+    <div class="section-title">Step 6: Loss &amp; Backpropagation</div>
     <div class="section-sub">At every position, the predicted character is compared against the actual next character. Cross-entropy loss is computed and averaged. Gradients flow backward to update all weights.</div>
 
     <div style="max-width:540px">
@@ -645,34 +645,30 @@ grace?</div>
 
       <!-- Code Section 1: Input -->
       <div class="code-section" id="code-1">
-        <div class="code-step-label">Step 1 — input preparation</div>
-        <div class="code-block"><span class="code-line code-cm"># ── Split text into 100-char windows ────────────</span>
-<span class="code-line"><span class="code-cm"># features: shakespeare[:-1]  (chars 0 … N-1)</span></span>
-<span class="code-line"><span class="code-cm"># labels:   shakespeare[ 1:]  (chars 1 … N)  ← offset</span></span>
+        <div class="code-step-label">Step 2 — text input & vectorization</div>
+        <div class="code-block"><span class="code-line code-cm"># ── Split into 100-char windows, offset by 1 ────</span>
 <span class="code-line hl">features = list(split_input(shakespeare[:-<span class="code-num">1</span>], <span class="code-num">100</span>))</span>
-<span class="code-line hl">labels   = list(split_input(shakespeare[<span class="code-num">1</span>:],  <span class="code-num">100</span>))</span>
-<span class="code-line"></span>
-<span class="code-line code-cm"># ── TextVectorization: char → integer ───────────</span>
-<span class="code-line">tokenizer = layers.<span class="code-fn">TextVectorization</span>(</span>
-<span class="code-line hl">    standardize=<span class="code-kw">None</span>,    <span class="code-cm"># keep case & punctuation</span></span>
-<span class="code-line hl">    split=<span class="code-str">"character"</span>,   <span class="code-cm"># character-level</span></span>
-<span class="code-line">    output_sequence_length=<span class="code-num">100</span>,</span>
-<span class="code-line">)</span>
-<span class="code-line">tokenizer.<span class="code-fn">adapt</span>(dataset.<span class="code-fn">map</span>(<span class="code-kw">lambda</span> x, y: x))</span>
-<span class="code-line">vocabulary_size = tokenizer.<span class="code-fn">vocabulary_size</span>()  <span class="code-cm"># 67</span></span>
-<span class="code-line"></span>
-<span class="code-line code-cm"># ── Apply to dataset ────────────────────────────</span>
-<span class="code-line">dataset = dataset.<span class="code-fn">map</span>(</span>
-<span class="code-line">    <span class="code-kw">lambda</span> x, y: (tokenizer(x), tokenizer(y)),</span>
-<span class="code-line">)</span>
-<span class="code-line"><span class="code-cm"># Each obs: (100 integers, 100 integers)</span></span>
+<span class="code-line hl">labels   = list(split_input(shakespeare[<span class="code-num">1</span>:],  <span class="code-num">100</span>))  <span class="code-cm"># ← shift</span></span>
+<span class="code-line">dataset  = tf.data.Dataset.<span class="code-fn">from_tensor_slices</span>((features, labels))</span>
 <span class="code-line">training_data = dataset.<span class="code-fn">batch</span>(<span class="code-num">64</span>).<span class="code-fn">cache</span>().<span class="code-fn">shuffle</span>(<span class="code-num">10_000</span>)</span>
+<span class="code-line"></span>
+<span class="code-line code-cm"># ── TextVectorization lives INSIDE the model ─────</span>
+<span class="code-line code-cm"># Raw text strings go in; integers come out.</span>
+<span class="code-line"><span class="code-const">text_input</span> = layers.<span class="code-fn">Input</span>(shape=(<span class="code-num">1</span>,), dtype=<span class="code-str">"string"</span>)</span>
+<span class="code-line hl">x = layers.<span class="code-fn">TextVectorization</span>(</span>
+<span class="code-line hl">    standardize=<span class="code-kw">None</span>,</span>
+<span class="code-line hl">    split=<span class="code-str">"character"</span>,          <span class="code-cm"># character-level</span></span>
+<span class="code-line hl">    output_sequence_length=<span class="code-num">100</span>,  <span class="code-cm"># 67 unique chars</span></span>
+<span class="code-line hl">)(text_input)</span>
+<span class="code-line"><span class="code-cm"># → output shape: (batch, 100)  integers 0–66</span></span>
+<span class="code-line"><span class="code-cm"># No separate tokenizer.adapt() call needed —</span></span>
+<span class="code-line"><span class="code-cm"># the layer learns the vocabulary from the data.</span></span>
 </div>
       </div>
 
       <!-- Code Section 2: Embedding -->
       <div class="code-section" id="code-2">
-        <div class="code-step-label">Step 2 — embedding lookup</div>
+        <div class="code-step-label">Step 3 — embedding lookup</div>
         <div class="code-block"><span class="code-line code-cm"># Model receives integer token IDs</span>
 <span class="code-line">inputs = layers.<span class="code-fn">Input</span>(</span>
 <span class="code-line">    shape=(sequence_length,),  <span class="code-cm"># 100 integers</span></span>
@@ -696,7 +692,7 @@ grace?</div>
 
       <!-- Code Section 3: RNN -->
       <div class="code-section" id="code-3">
-        <div class="code-step-label">Step 3 — GRU recurrent layer</div>
+        <div class="code-step-label">Step 4 — GRU recurrent layer</div>
         <div class="code-block"><span class="code-line code-cm"># Input: (batch, 100, 256)  — embeddings</span>
 <span class="code-line code-cm"># At each timestep t:</span>
 <span class="code-line code-cm">#   h_t = GRU(embedding_t, h_{t-1})</span>
@@ -722,7 +718,7 @@ grace?</div>
 
       <!-- Code Section 4: Dense -->
       <div class="code-section" id="code-4">
-        <div class="code-step-label">Step 4 — Dense + Softmax</div>
+        <div class="code-step-label">Step 5 — Dense + Softmax</div>
         <div class="code-block"><span class="code-line code-cm"># Input: (batch, 100, 1024) — all hidden states</span>
 <span class="code-line code-cm"># Dense applied INDEPENDENTLY at every position</span>
 <span class="code-line code-cm">#</span>
@@ -750,7 +746,7 @@ grace?</div>
 
       <!-- Code Section 5: Loss -->
       <div class="code-section" id="code-5">
-        <div class="code-step-label">Step 5 — loss & training</div>
+        <div class="code-step-label">Step 6 — loss & training</div>
         <div class="code-block"><span class="code-line code-cm"># Compile: specify loss function and optimizer ──</span>
 <span class="code-line">model.<span class="code-fn">compile</span>(</span>
 <span class="code-line">    optimizer=<span class="code-str">"adam"</span>,</span>
@@ -814,6 +810,9 @@ function showStep(s) {
   document.querySelectorAll('.code-section').forEach((el,i) => {
     el.classList.toggle('active', i === s);
   });
+  // Hide right panel entirely on Step 1 (Overview); show from Step 2 onward
+  document.getElementById('right-panel').style.display = (s === 0) ? 'none' : 'flex';
+  document.getElementById('left-panel').style.width = (s === 0) ? '100%' : '56%';
   document.getElementById('step-counter').textContent = 'Step ' + (s+1) + ' of ' + SECTIONS;
   document.getElementById('desc-bar').textContent = descriptions[s];
   document.getElementById('btn-prev').disabled = (s === 0);
