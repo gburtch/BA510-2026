@@ -1126,6 +1126,7 @@ const SECTIONS = 7;  // 0=Overview, 1–6=Steps 1–6
 let step = 0;
 let conversation = null;
 let walkthroughActive = false;
+let walkthroughLaunched = false;  // set true on first click, only reset by endWalkthrough()
 
 const stepLabels = [
   "Overview — The Full Training Pipeline",
@@ -1452,8 +1453,9 @@ function animateRNN() {
 
 // ── WALKTHROUGH (ElevenLabs Conversational AI) ─────────────────
 async function startWalkthrough() {
-  if (walkthroughActive) return;
-  walkthroughActive = true;   // lock synchronously — onConnect will confirm later
+  if (walkthroughLaunched) return;   // hard gate — survives any onDisconnect flicker
+  walkthroughLaunched = true;
+  walkthroughActive = true;
   const ConvClass =
     (window.ElevenLabsClient && window.ElevenLabsClient.Conversation) ||
     (window.client && window.client.Conversation) ||
@@ -1490,7 +1492,10 @@ async function startWalkthrough() {
         }
       },
       onConnect: function() { walkthroughActive = true; setWalkthroughUI('listening'); },
-      onDisconnect: function() { walkthroughActive = false; conversation = null; setWalkthroughUI('idle'); },
+      onDisconnect: function() { walkthroughActive = false; conversation = null;
+        // Only show idle/CTA if this was an intentional end (endWalkthrough resets walkthroughLaunched)
+        if (!walkthroughLaunched) setWalkthroughUI('idle');
+      },
       onModeChange: function({ mode }) {
         if (walkthroughActive) setWalkthroughUI(mode);
         if (window.simliSetSpeaking) window.simliSetSpeaking(mode === 'speaking');
@@ -1502,14 +1507,17 @@ async function startWalkthrough() {
     });
   } catch(e) {
     console.error('Could not start walkthrough:', e);
-    walkthroughActive = false;   // release lock so user can retry
+    walkthroughActive = false;
+    walkthroughLaunched = false;  // release so user can retry after a real failure
     setWalkthroughUI('idle');
   }
 }
 
 async function endWalkthrough() {
   if (conversation) { await conversation.endSession(); }
-  walkthroughActive = false; conversation = null;
+  walkthroughActive = false;
+  walkthroughLaunched = false;  // allow a fresh start after intentional end
+  conversation = null;
   setWalkthroughUI('idle');
   if (window.simliStop) window.simliStop();
 }
