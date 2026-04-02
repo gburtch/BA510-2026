@@ -27,7 +27,7 @@ code,.mono{font-family:'Courier New',Courier,monospace}
 }
 #topbar-title{font-weight:700;font-size:1.1rem;color:#1e293b;letter-spacing:-.01em}
 #step-counter{
-  font-family:'JetBrains Mono',monospace;font-size:.85rem;
+  font-family:'Courier New',monospace;font-size:.85rem;
   color:#64748b;font-weight:500;white-space:nowrap;
 }
 #topbar-right{display:flex;gap:6px;align-items:center}
@@ -94,11 +94,11 @@ code,.mono{font-family:'Courier New',Courier,monospace}
   flex-shrink:0;
 }
 #code-header-title{
-  font-family:'JetBrains Mono',monospace;
+  font-family:'Courier New',Courier,monospace;
   font-size:.78rem;color:#5f6368;font-weight:500;
 }
 #code-header-badge{
-  font-size:.72rem;color:#1a73e8;font-family:'JetBrains Mono',monospace;
+  font-size:.72rem;color:#1a73e8;font-family:'Courier New',Courier,monospace;
   padding:2px 8px;background:rgba(26,115,232,.08);border-radius:4px;
   border:1px solid rgba(26,115,232,.2);
 }
@@ -151,6 +151,10 @@ code,.mono{font-family:'Courier New',Courier,monospace}
 .step-view{display:none}
 .step-view.active{display:block}
 
+/* ── PHASE BLOCKS (inside steps) ── */
+.phase-block{margin-bottom:22px;padding:14px 16px;background:#f8fafc;border:1px solid #e2e8f0;border-radius:8px}
+.phase-label{font-size:.75rem;font-weight:700;color:#334155;margin-bottom:10px;letter-spacing:.02em}
+
 /* ── FLOW ELEMENTS ── */
 .flow{display:flex;align-items:center;gap:18px;flex-wrap:nowrap}
 .flow-col{display:flex;flex-direction:column;align-items:center;gap:10px}
@@ -163,7 +167,7 @@ code,.mono{font-family:'Courier New',Courier,monospace}
   width:40px;height:40px;
   border:2px solid #475569;border-radius:6px;
   background:#f1f5f9;
-  font-family:'JetBrains Mono',monospace;font-size:1rem;font-weight:600;
+  font-family:'Courier New',Courier,monospace;font-size:1rem;font-weight:600;
   color:#1e293b;flex-shrink:0;
 }
 .token.highlight{background:#fef9c3;border-color:#ca8a04}
@@ -173,7 +177,7 @@ code,.mono{font-family:'Courier New',Courier,monospace}
   display:inline-flex;align-items:center;justify-content:center;
   width:38px;height:38px;border-radius:50%;
   border:2px solid #0891b2;background:#ecfeff;
-  font-family:'JetBrains Mono',monospace;font-size:.82rem;font-weight:600;
+  font-family:'Courier New',Courier,monospace;font-size:.82rem;font-weight:600;
   color:#0e7490;flex-shrink:0;
 }
 
@@ -184,20 +188,20 @@ code,.mono{font-family:'Courier New',Courier,monospace}
 .layer-dense{background:#f5f3ff;color:#6d28d9;border:2px solid #7c3aed;border-radius:10px;padding:12px 20px;font-weight:600;font-size:.88rem;text-align:center}
 
 /* ── PILLS ── */
-.h-pill{display:inline-flex;align-items:center;justify-content:center;padding:5px 11px;border-radius:6px;background:#ecfdf5;border:2px solid #059669;font-family:'JetBrains Mono',monospace;font-size:.78rem;font-weight:600;color:#047857;flex-shrink:0}
-.pred-pill{display:inline-flex;align-items:center;justify-content:center;padding:5px 11px;border-radius:6px;background:#f5f3ff;border:2px solid #7c3aed;font-family:'JetBrains Mono',monospace;font-size:.88rem;font-weight:600;color:#6d28d9;flex-shrink:0}
-.target-pill{display:inline-flex;align-items:center;justify-content:center;padding:5px 11px;border-radius:6px;background:#ecfdf5;border:2px solid #059669;font-family:'JetBrains Mono',monospace;font-size:.88rem;font-weight:600;color:#047857;flex-shrink:0}
-.vec-pill{display:inline-block;padding:6px 12px;border-radius:8px;background:#ecfeff;border:2px solid #0891b2;font-family:'JetBrains Mono',monospace;font-size:.75rem;color:#0e7490;white-space:nowrap}
+.h-pill{display:inline-flex;align-items:center;justify-content:center;padding:5px 11px;border-radius:6px;background:#ecfdf5;border:2px solid #059669;font-family:'Courier New',Courier,monospace;font-size:.78rem;font-weight:600;color:#047857;flex-shrink:0}
+.pred-pill{display:inline-flex;align-items:center;justify-content:center;padding:5px 11px;border-radius:6px;background:#f5f3ff;border:2px solid #7c3aed;font-family:'Courier New',Courier,monospace;font-size:.88rem;font-weight:600;color:#6d28d9;flex-shrink:0}
+.target-pill{display:inline-flex;align-items:center;justify-content:center;padding:5px 11px;border-radius:6px;background:#ecfdf5;border:2px solid #059669;font-family:'Courier New',Courier,monospace;font-size:.88rem;font-weight:600;color:#047857;flex-shrink:0}
+.vec-pill{display:inline-block;padding:6px 12px;border-radius:8px;background:#ecfeff;border:2px solid #0891b2;font-family:'Courier New',Courier,monospace;font-size:.75rem;color:#0e7490;white-space:nowrap}
 
 /* ── PIPELINE (overview) ── */
 .pipeline{display:flex;align-items:center;gap:8px;padding:20px 16px;background:#f8fafc;border-radius:12px;border:1px solid #e2e8f0;overflow-x:auto;flex-wrap:nowrap}
 .pipe-node{display:flex;flex-direction:column;align-items:center;gap:5px;flex-shrink:0}
 .pipe-shape{padding:8px 14px;border-radius:8px;font-weight:600;font-size:.78rem;text-align:center;white-space:nowrap}
-.pipe-label{font-size:.68rem;color:#94a3b8;font-family:'JetBrains Mono',monospace}
+.pipe-label{font-size:.68rem;color:#94a3b8;font-family:'Courier New',Courier,monospace}
 .pipe-arrow{font-size:1.3rem;color:#cbd5e1;flex-shrink:0}
 
 /* ── TEXT BLOCK ── */
-.text-block{padding:12px 16px;background:#f8fafc;border:1px solid #e2e8f0;border-radius:8px;font-family:'JetBrains Mono',monospace;font-size:.8rem;line-height:1.65;color:#334155;white-space:pre-wrap;max-width:340px}
+.text-block{padding:12px 16px;background:#f8fafc;border:1px solid #e2e8f0;border-radius:8px;font-family:'Courier New',Courier,monospace;font-size:.8rem;line-height:1.65;color:#334155;white-space:pre-wrap;max-width:340px}
 .text-highlight{background:#fef9c3;border-radius:3px;padding:1px 3px;border:1px solid #ca8a04}
 
 /* ── SECTION TITLES ── */
@@ -208,7 +212,7 @@ code,.mono{font-family:'Courier New',Courier,monospace}
 .note{margin-top:14px;padding:10px 14px;background:#fffbeb;border-left:3px solid #f59e0b;border-radius:0 6px 6px 0;font-size:.8rem;color:#92400e;line-height:1.5}
 
 /* ── EMBEDDING TABLE ── */
-#emb-matrix td,#emb-matrix th{padding:3px 7px;border:1px solid #e2e8f0;font-family:'JetBrains Mono',monospace;font-size:.62rem}
+#emb-matrix td,#emb-matrix th{padding:3px 7px;border:1px solid #e2e8f0;font-family:'Courier New',Courier,monospace;font-size:.62rem}
 #emb-row-28{background:#fef9c3;transition:background .4s}
 #emb-row-28 td{color:#0e7490;font-weight:700}
 
@@ -227,10 +231,10 @@ code,.mono{font-family:'Courier New',Courier,monospace}
 .mini-bar.tall{height:26px;opacity:1}
 
 /* ── LOSS SHIFT ── */
-.shift-diagram{display:flex;flex-direction:column;gap:4px;font-family:'JetBrains Mono',monospace;font-size:.8rem;padding:10px 14px;background:#f8fafc;border-radius:8px;border:1px solid #e2e8f0}
+.shift-diagram{display:flex;flex-direction:column;gap:4px;font-family:'Courier New',Courier,monospace;font-size:.8rem;padding:10px 14px;background:#f8fafc;border-radius:8px;border:1px solid #e2e8f0}
 .shift-row{display:flex;align-items:center;gap:6px}
 .shift-label{width:64px;font-weight:600;color:#64748b;font-size:.72rem}
-.formula{font-family:'JetBrains Mono',monospace;font-size:.84rem;color:#1e293b;padding:10px 16px;background:#f8fafc;border:1px solid #e2e8f0;border-radius:8px;text-align:center}
+.formula{font-family:'Courier New',Courier,monospace;font-size:.84rem;color:#1e293b;padding:10px 16px;background:#f8fafc;border:1px solid #e2e8f0;border-radius:8px;text-align:center}
 
 /* ── COMPARE ROW ── */
 .compare-row{display:flex;align-items:center;gap:12px}
@@ -251,7 +255,7 @@ code,.mono{font-family:'Courier New',Courier,monospace}
 <!-- ══ TOP BAR ══ -->
 <div id="topbar">
   <div id="topbar-title">CharRNN Training — BA 510</div>
-  <div id="step-counter">Step 1 of 6</div>
+  <div id="step-counter">Overview</div>
   <div id="topbar-right">
     <button id="btn-prev" disabled>&larr; Prev</button>
     <button id="btn-next" class="primary">Next &rarr;</button>
@@ -276,10 +280,10 @@ code,.mono{font-family:'Courier New',Courier,monospace}
   <!-- ════ LEFT PANEL: Visualization ════ -->
   <div id="left-panel">
 
-  <!-- ─── STEP 0: OVERVIEW ─── -->
+  <!-- ─── OVERVIEW (no step number) ─── -->
   <div class="step-view active" id="step-0">
-    <div class="section-title">Step 1: Overview — The Full Training Pipeline</div>
-    <div class="section-sub">Given every character seen so far, the model predicts the next one. Training repeats this over millions of positions across Shakespeare's complete works.</div>
+    <div class="section-title">Overview — The Full Training Pipeline</div>
+    <div class="section-sub">Given every character seen so far, the model predicts the next one. We'll walk through <strong>Steps 1–6</strong> below — from raw text all the way through loss and backpropagation.</div>
 
     <div class="pipeline">
       <div class="pipe-node"><div class="pipe-shape" style="background:#f1f5f9;border:2px solid #475569;color:#1e293b">text</div><div class="pipe-label">raw input</div></div>
@@ -295,15 +299,24 @@ code,.mono{font-family:'Courier New',Courier,monospace}
       <div class="pipe-node"><div class="pipe-shape" style="background:#f5f3ff;border:2px solid #7c3aed;color:#6d28d9;font-size:1.1rem;font-weight:700">ĉ</div><div class="pipe-label">predicted char</div></div>
     </div>
 
+    <!-- Step number pills -->
+    <div style="margin-top:22px;display:flex;gap:8px;flex-wrap:wrap;align-items:center">
+      <span style="font-size:.72rem;color:#64748b;font-weight:600">Steps we cover:</span>
+      <span style="padding:3px 10px;border-radius:12px;font-size:.72rem;font-weight:700;background:#eff6ff;color:#2563eb;border:1px solid #bfdbfe">1 — Training Examples</span>
+      <span style="padding:3px 10px;border-radius:12px;font-size:.72rem;font-weight:700;background:#f0f9ff;color:#0369a1;border:1px solid #bae6fd">2 — TextVectorization</span>
+      <span style="padding:3px 10px;border-radius:12px;font-size:.72rem;font-weight:700;background:#ecfeff;color:#0e7490;border:1px solid #a5f3fc">3 — Embedding</span>
+      <span style="padding:3px 10px;border-radius:12px;font-size:.72rem;font-weight:700;background:#ecfdf5;color:#047857;border:1px solid #6ee7b7">4 — GRU</span>
+      <span style="padding:3px 10px;border-radius:12px;font-size:.72rem;font-weight:700;background:#f5f3ff;color:#6d28d9;border:1px solid #ddd6fe">5 — Dense+Softmax</span>
+      <span style="padding:3px 10px;border-radius:12px;font-size:.72rem;font-weight:700;background:#fff0f0;color:#991b1b;border:1px solid #fecaca">6 — Loss &amp; Backprop</span>
+    </div>
+
     <!-- Real example -->
     <div style="margin-top:28px;display:flex;align-items:flex-start;justify-content:center;gap:28px;flex-wrap:wrap">
-      <!-- Input text -->
       <div>
         <div style="font-size:.72rem;color:#64748b;font-weight:600;margin-bottom:6px">Input text seen so far</div>
-        <div style="font-family:'JetBrains Mono',monospace;font-size:.75rem;line-height:1.6;padding:12px 16px;border-radius:8px;background:#fefce8;border:2px solid #facc15;color:#1e293b;max-width:260px">King Richard III:<br>How now, what means<br>this armed g</div>
+        <div style="font-family:'Courier New',monospace;font-size:.75rem;line-height:1.6;padding:12px 16px;border-radius:8px;background:#fefce8;border:2px solid #facc15;color:#1e293b;max-width:260px">King Richard III:<br>How now, what means<br>this armed g</div>
       </div>
       <div style="font-size:1.4rem;color:#94a3b8;padding-top:32px">&rarr;</div>
-      <!-- Compact pipeline badges -->
       <div style="padding-top:32px">
         <div style="font-size:.68rem;color:#94a3b8;margin-bottom:6px">through the model</div>
         <div style="display:flex;gap:4px;align-items:center;font-size:.68rem">
@@ -317,72 +330,126 @@ code,.mono{font-family:'Courier New',Courier,monospace}
         </div>
       </div>
       <div style="font-size:1.4rem;color:#94a3b8;padding-top:32px">&rarr;</div>
-      <!-- Prediction vs actual -->
       <div style="padding-top:20px;text-align:center">
         <div style="display:flex;gap:14px;align-items:center">
-          <div><div style="font-size:.68rem;color:#7c3aed;font-weight:600;margin-bottom:4px">Prediction</div><div style="width:46px;height:46px;border-radius:10px;background:#f5f3ff;border:2px solid #7c3aed;color:#7c3aed;display:flex;align-items:center;justify-content:center;font:700 1.35rem 'JetBrains Mono',monospace">u</div></div>
+          <div><div style="font-size:.68rem;color:#7c3aed;font-weight:600;margin-bottom:4px">Prediction</div><div style="width:46px;height:46px;border-radius:10px;background:#f5f3ff;border:2px solid #7c3aed;color:#7c3aed;display:flex;align-items:center;justify-content:center;font:700 1.35rem 'Courier New',monospace">u</div></div>
           <div style="font-size:.85rem;color:#94a3b8">&harr;</div>
-          <div><div style="font-size:.68rem;color:#059669;font-weight:600;margin-bottom:4px">Actual next</div><div style="width:46px;height:46px;border-radius:10px;background:#ecfdf5;border:2px solid #059669;color:#059669;display:flex;align-items:center;justify-content:center;font:700 1.35rem 'JetBrains Mono',monospace">u</div></div>
+          <div><div style="font-size:.68rem;color:#059669;font-weight:600;margin-bottom:4px">Actual next</div><div style="width:46px;height:46px;border-radius:10px;background:#ecfdf5;border:2px solid #059669;color:#059669;display:flex;align-items:center;justify-content:center;font:700 1.35rem 'Courier New',monospace">u</div></div>
         </div>
         <div style="font-size:.72rem;color:#059669;margin-top:6px">&#10003; match → low loss</div>
       </div>
     </div>
 
-    <div class="note"><strong>In training:</strong> this prediction happens at <em>every position simultaneously</em> (100 positions per sequence). The target at each position is the next character. Loss is averaged across all positions and all sequences in the batch.</div>
+    <div class="note"><strong>In training:</strong> this prediction happens at <em>every position simultaneously</em> — 100 positions per sequence. The target at each position is the next character. Loss is averaged across all positions and all sequences in the batch.</div>
   </div>
 
-  <!-- ─── STEP 1: INPUT ─── -->
+  <!-- ─── STEP 1: BUILDING TRAINING EXAMPLES ─── -->
   <div class="step-view" id="step-1">
-    <div class="section-title">Step 2: Text → Integers (Preprocessing)</div>
-    <div class="section-sub">Shakespeare text is split into characters and mapped to unique integers before entering the model.</div>
+    <div class="section-title">Step 1: Building Training Examples</div>
+    <div class="section-sub">Before any network layers, we need to understand how raw text becomes (X, y) training pairs — and how those pairs flow into the model.</div>
 
-    <div class="flow" style="gap:20px;align-items:flex-start">
-      <!-- Raw text -->
-      <div>
-        <div style="font-size:.72rem;color:#64748b;font-weight:600;margin-bottom:6px">Raw text (excerpt)</div>
-        <div class="text-block">King Richard III:
-How now, what means
-this armed guard
-That waits upon your
-grace?</div>
-        <div style="margin-top:10px;font-size:.72rem;color:#64748b;font-weight:600;margin-bottom:4px">6-character window:</div>
-        <div class="text-block"><span class="text-highlight">K i n g &nbsp;R</span>ichard...</div>
+    <!-- ── PHASE A: Window construction ── -->
+    <div class="phase-block">
+      <div class="phase-label">① How we construct training observations</div>
+
+      <div style="margin-bottom:8px;font-size:.72rem;color:#64748b;font-weight:600">Shakespeare corpus — sliding 100-char window →</div>
+      <div id="tape-outer" style="overflow:hidden;border-radius:6px;border:1px solid #e2e8f0;background:#f8fafc;padding:6px 0;position:relative;height:34px">
+        <div id="tape-text" style="font-family:'Courier New',monospace;font-size:.82rem;white-space:nowrap;position:absolute;transition:left 0.6s ease;color:#475569;padding:4px 8px">First Citizen: Before we proceed any further, hear me speak. All: Speak, speak.</div>
+        <div id="tape-window" style="position:absolute;top:0;bottom:0;background:rgba(59,130,246,.12);border:2px solid #3b82f6;border-radius:4px;transition:left .5s ease,width .5s ease;pointer-events:none;left:8px;width:130px"></div>
       </div>
-      <div class="arrow">&rarr;</div>
-      <!-- Chars -->
-      <div style="text-align:center">
-        <div style="font-size:.72rem;color:#64748b;font-weight:600;margin-bottom:6px">Split by character</div>
-        <div style="display:flex;gap:5px">
-          <div class="token highlight">K</div><div class="token highlight">i</div>
-          <div class="token highlight">n</div><div class="token highlight">g</div>
-          <div class="token highlight">&nbsp;</div><div class="token highlight">R</div>
+
+      <!-- X / y rows -->
+      <div style="margin-top:14px;display:flex;flex-direction:column;gap:6px">
+        <div style="display:flex;align-items:center;gap:8px">
+          <div style="width:58px;font-size:.72rem;font-weight:700;color:#2563eb;flex-shrink:0">X (input)</div>
+          <div id="x-chars" style="display:flex;gap:3px;flex-wrap:nowrap;overflow:hidden"></div>
+          <div style="font-size:.7rem;color:#94a3b8;flex-shrink:0">… 100 chars total</div>
         </div>
-        <div style="margin-top:16px;font-size:.72rem;color:#64748b;font-weight:600;margin-bottom:6px">TextVectorization → integers</div>
-        <div style="display:flex;gap:5px">
-          <div class="int-circle">28</div><div class="int-circle">6</div>
-          <div class="int-circle">11</div><div class="int-circle">4</div>
-          <div class="int-circle">2</div><div class="int-circle">15</div>
+        <div style="display:flex;align-items:center;gap:8px">
+          <div style="width:58px;font-size:.72rem;font-weight:700;color:#059669;flex-shrink:0">y (target)</div>
+          <div id="y-chars" style="display:flex;gap:3px;flex-wrap:nowrap;overflow:hidden"></div>
+          <div style="font-size:.7rem;color:#94a3b8;flex-shrink:0">… shifted by 1</div>
         </div>
-        <div style="font-size:.68rem;color:#0891b2;margin-top:8px">67 unique chars total (26×2 + punctuation)</div>
       </div>
-      <div class="arrow">&rarr;</div>
-      <!-- Shift diagram -->
-      <div>
-        <div style="font-size:.72rem;color:#64748b;font-weight:600;margin-bottom:8px">Input / Target offset</div>
-        <div class="shift-diagram">
-          <div class="shift-row"><span class="shift-label">Input:</span><span class="token highlight" style="width:32px;height:32px;font-size:.85rem">K</span><span class="token highlight" style="width:32px;height:32px;font-size:.85rem">i</span><span class="token highlight" style="width:32px;height:32px;font-size:.85rem">n</span><span class="token highlight" style="width:32px;height:32px;font-size:.85rem">g</span><span class="token highlight" style="width:32px;height:32px;font-size:.85rem">&nbsp;</span></div>
-          <div style="margin:2px 0 2px 64px;font-size:.65rem;color:#64748b">←— shift by 1 —→</div>
-          <div class="shift-row"><span class="shift-label">Target:</span><span class="target-pill" style="padding:4px 8px;font-size:.82rem">i</span><span class="target-pill" style="padding:4px 8px;font-size:.82rem">n</span><span class="target-pill" style="padding:4px 8px;font-size:.82rem">g</span><span class="target-pill" style="padding:4px 8px;font-size:.82rem">&nbsp;</span><span class="target-pill" style="padding:4px 8px;font-size:.82rem">R</span></div>
-        </div>
-        <div style="font-size:.72rem;color:#059669;margin-top:8px;font-weight:500">&#10004; These integers enter the model</div>
+
+      <!-- Pair spotlight -->
+      <div id="pair-spotlight" style="margin-top:10px;display:flex;gap:8px;align-items:center;min-height:28px;font-size:.72rem;color:#64748b;font-family:'Courier New',monospace">
+        Click Play to see windows advance →
+      </div>
+
+      <div style="margin-top:8px;display:flex;align-items:center;gap:10px">
+        <button id="btn-window-play" onclick="toggleWindowAnim()" style="padding:4px 14px;border:1px solid #3b82f6;border-radius:5px;background:#eff6ff;color:#2563eb;font-size:.78rem;cursor:pointer;font-family:'Inter',sans-serif">&#9654; Play</button>
+        <span id="window-counter" style="font-size:.72rem;color:#64748b;font-family:'Courier New',monospace">Window 1 of 174</span>
       </div>
     </div>
 
-    <div class="note"><strong>Why shift by 1?</strong> We want to predict the <em>next</em> character from the current one. Using the same text offset by one position gives us free supervised labels from unsupervised data. <code>shakespeare[1:]</code> is the target; <code>shakespeare[:-1]</code> is the input.</div>
+    <!-- ── PHASE B: X enters the network ── -->
+    <div class="phase-block">
+      <div class="phase-label">② X enters the network — y is held aside for the loss</div>
+      <div style="display:flex;gap:16px;align-items:flex-start;flex-wrap:wrap">
+        <div>
+          <div style="font-size:.7rem;color:#2563eb;font-weight:600;margin-bottom:5px">X — 100-char string → model input</div>
+          <div style="font-family:'Courier New',monospace;font-size:.78rem;line-height:1.5;padding:10px 14px;background:#eff6ff;border:2px solid #3b82f6;border-radius:8px;color:#1e40af;max-width:280px;word-break:break-all">First Citizen:\nBefore we proceed any further, hear me spea</div>
+          <div style="margin-top:6px;font-size:.68rem;color:#64748b">100 characters, entered as a raw string</div>
+        </div>
+        <div style="padding-top:28px;font-size:1.3rem;color:#94a3b8">&rarr;</div>
+        <div style="padding-top:4px">
+          <div style="padding:8px 16px;background:#ecfdf5;border:2px solid #059669;border-radius:8px;font-size:.8rem;color:#047857;font-weight:600">MODEL</div>
+          <div style="font-size:.68rem;color:#64748b;margin-top:4px;text-align:center">predicts next char<br>at every position</div>
+        </div>
+        <div style="padding-top:4px">
+          <div style="font-size:.7rem;color:#059669;font-weight:600;margin-bottom:5px">y — held aside for loss</div>
+          <div style="font-family:'Courier New',monospace;font-size:.78rem;line-height:1.5;padding:10px 14px;background:#ecfdf5;border:2px solid #059669;border-radius:8px;color:#047857;max-width:280px;word-break:break-all">irst Citizen:\nBefore we proceed any further, hear me speak</div>
+          <div style="margin-top:6px;font-size:.68rem;color:#64748b">Same text, shifted 1 char forward</div>
+        </div>
+      </div>
+    </div>
+
+    <div class="note"><strong>Key insight:</strong> <code>features = shakespeare[:-1]</code> and <code>labels = shakespeare[1:]</code>. The label at every position is just the <em>next</em> character — free supervised signal from unsupervised text.</div>
   </div>
 
-  <!-- ─── STEP 2: EMBEDDING ─── -->
+  <!-- ─── STEP 2: TEXT VECTORIZATION ─── -->
   <div class="step-view" id="step-2">
+    <div class="section-title">Step 2: Text Vectorization — Characters → Integers</div>
+    <div class="section-sub">A <code>TextVectorization</code> layer lives <em>inside</em> the model. It splits each 100-char string into individual characters and maps each one to a unique integer from 0–66. The model never sees letters — only integers.</div>
+
+    <!-- Char splitting animation -->
+    <div class="phase-block">
+      <div class="phase-label">① Each character in X gets its own integer ID</div>
+      <div style="margin-bottom:8px;font-size:.7rem;color:#64748b;font-weight:600">First 10 characters of X — watch them split and get mapped:</div>
+
+      <div id="split-row" style="display:flex;gap:5px;flex-wrap:wrap;min-height:44px;align-items:center"></div>
+
+      <div style="margin:8px 0;display:flex;gap:5px;opacity:0;transition:opacity .4s" id="split-arrows"></div>
+
+      <div id="int-row" style="display:flex;gap:5px;flex-wrap:wrap;min-height:44px;align-items:center"></div>
+
+      <button id="btn-split-play" onclick="animateSplit()" style="margin-top:10px;padding:4px 14px;border:1px solid #0891b2;border-radius:5px;background:#ecfeff;color:#0e7490;font-size:.78rem;cursor:pointer;font-family:'Inter',sans-serif">&#9654; Animate split</button>
+    </div>
+
+    <!-- 67-char vocabulary -->
+    <div class="phase-block">
+      <div class="phase-label">② The full vocabulary — 67 unique characters</div>
+      <div style="font-family:'Courier New',monospace;font-size:.78rem;line-height:1.9;padding:10px 14px;background:#f8fafc;border:1px solid #e2e8f0;border-radius:6px;color:#334155;word-break:break-all">
+        <span style="opacity:.5">int 0 = </span>[PAD]<br>
+        <span style="opacity:.5">int 1 = </span>' ' (space)<br>
+        <span style="opacity:.5">int 2 = </span>'\n' (newline)<br>
+        <span style="opacity:.5">int 3–12 = </span>digits 0–9<br>
+        <span style="opacity:.5">int 13–38 = </span>A–Z (uppercase)<br>
+        <span style="opacity:.5">int 39–64 = </span>a–z (lowercase)<br>
+        <span style="opacity:.5">int 65–66 = </span>punctuation ( : , . ! ? … )
+      </div>
+      <div style="margin-top:8px;font-size:.75rem;color:#475569;line-height:1.6">
+        <strong>67 unique characters</strong> → each gets a stable integer 0–66.<br>
+        <code>TextVectorization</code> builds this mapping automatically by scanning the training data once (<code>.adapt()</code>).
+      </div>
+    </div>
+
+    <div class="note"><strong>Output shape after TextVectorization:</strong> <code>(batch_size, 100)</code> — a 2-D tensor of integers, one row per training sequence. This feeds directly into the Embedding layer next.</div>
+  </div>
+
+  <!-- ─── STEP 3: EMBEDDING ─── -->
+  <div class="step-view" id="step-3">
     <div class="section-title">Step 3: Embedding Layer</div>
     <div class="section-sub">Each integer is a row index into a learned 67 × 256 lookup table. Integer 28 (representing "K") retrieves row 28 — a 256-dimensional dense vector.</div>
 
@@ -432,17 +499,15 @@ grace?</div>
     <div class="note"><strong>These vectors are learned.</strong> Early in training they are random. After training, characters that appear in similar contexts (e.g., vowels, common punctuation) end up with similar embedding vectors.</div>
   </div>
 
-  <!-- ─── STEP 3: RNN ─── -->
-  <div class="step-view" id="step-3">
+  <!-- ─── STEP 4: RNN ─── -->
+  <div class="step-view" id="step-4">
     <div class="section-title">Step 4: Recurrent Layer (GRU)</div>
     <div class="section-sub">One embedding enters at a time. The GRU outputs a hidden state that feeds back as the next step's state. With <code>return_sequences=True</code>, all hidden states are collected.</div>
 
     <div style="max-width:520px;margin:0 auto;text-align:center">
-      <!-- Collected outputs -->
       <div style="font-size:.68rem;color:#64748b;font-weight:600;margin-bottom:6px">Collected hidden states (all 6 will appear here)</div>
       <div id="rnn-collected" style="display:flex;gap:6px;justify-content:center;min-height:34px;margin-bottom:14px;flex-wrap:wrap"></div>
 
-      <!-- Animation area -->
       <div id="rnn-anim-area" style="position:relative;display:flex;align-items:center;justify-content:center;gap:14px;padding:14px 0">
         <div style="text-align:center;min-width:72px">
           <div style="font-size:.62rem;color:#64748b;font-weight:600;margin-bottom:4px">input</div>
@@ -452,11 +517,11 @@ grace?</div>
         <span style="color:#94a3b8;font-size:.75rem">+</span>
         <div style="text-align:center;min-width:72px">
           <div style="font-size:.62rem;color:#64748b;font-weight:600;margin-bottom:4px">state in</div>
-          <div id="rnn-state-slot" class="rnn-slot" style="padding:4px 10px;border-radius:5px;background:#f1f5f9;border:1px solid #94a3b8;color:#64748b;font:600 .75rem 'JetBrains Mono',monospace;transition:all .3s">∅</div>
+          <div id="rnn-state-slot" class="rnn-slot" style="padding:4px 10px;border-radius:5px;background:#f1f5f9;border:1px solid #94a3b8;color:#64748b;font:600 .75rem 'Courier New',monospace;transition:all .3s">∅</div>
           <div style="font-size:.58rem;color:#059669;margin-top:3px">1024-dim</div>
         </div>
         <span class="arr-sm">&rarr;</span>
-        <div id="rnn-cell-box" style="padding:10px 20px;border-radius:10px;background:#059669;color:#fff;font:700 .95rem 'JetBrains Mono',monospace">GRU</div>
+        <div id="rnn-cell-box" style="padding:10px 20px;border-radius:10px;background:#059669;color:#fff;font:700 .95rem 'Courier New',monospace">GRU</div>
         <span class="arr-sm">&rarr;</span>
         <div style="text-align:center;min-width:52px">
           <div style="font-size:.62rem;color:#64748b;font-weight:600;margin-bottom:4px">output / state out</div>
@@ -465,31 +530,26 @@ grace?</div>
         </div>
       </div>
 
-      <!-- Feedback note -->
       <div id="rnn-feedback-arrow" style="min-height:26px;opacity:0;transition:opacity .4s">
         <span style="font-size:.68rem;color:#059669;font-weight:600">↩ output = next step's state input</span>
       </div>
 
-      <!-- Log -->
-      <div id="rnn-log" style="margin-top:10px;font-size:.7rem;color:#475569;text-align:left;max-width:380px;margin-left:auto;margin-right:auto;font-family:'JetBrains Mono',monospace;line-height:1.8"></div>
-
-      <!-- Status -->
+      <div id="rnn-log" style="margin-top:10px;font-size:.7rem;color:#475569;text-align:left;max-width:380px;margin-left:auto;margin-right:auto;font-family:'Courier New',monospace;line-height:1.8"></div>
       <div id="rnn-status" style="text-align:center;margin-top:8px;font-size:.78rem;color:#059669;font-weight:500;min-height:22px"></div>
     </div>
 
     <div class="note"><strong>The output and state are the same vector.</strong> <code>hₜ</code> both goes upward to Dense(67) (so we get a prediction) and rightward into the next GRU call as the new state. <code>return_sequences=True</code> gives us all 6 vectors, not just the last one.</div>
   </div>
 
-  <!-- ─── STEP 4: DENSE + SOFTMAX ─── -->
-  <div class="step-view" id="step-4">
+  <!-- ─── STEP 5: DENSE + SOFTMAX ─── -->
+  <div class="step-view" id="step-5">
     <div class="section-title">Step 5: Dense(67) + Softmax — One Per Position</div>
     <div class="section-sub">Each of the 6 collected hidden states independently passes through the same Dense layer. The result is 6 separate 67-class probability distributions.</div>
 
     <div style="max-width:580px">
-      <!-- 6 parallel rows -->
       <div style="display:flex;flex-direction:column;gap:4px">
         <div class="dense-row">
-          <div style="width:50px;text-align:right;font-family:'JetBrains Mono',monospace;font-size:.72rem;color:#047857;font-weight:600">h₁</div>
+          <div style="width:50px;text-align:right;font-family:'Courier New',monospace;font-size:.72rem;color:#047857;font-weight:600">h₁</div>
           <span class="arr-sm">&rarr;</span>
           <div class="dense-mini" style="background:#f5f3ff;border:1px solid #7c3aed;color:#6d28d9">Dense(67)+Softmax</div>
           <span class="arr-sm">&rarr;</span>
@@ -499,7 +559,7 @@ grace?</div>
           <span style="font-size:.68rem;color:#64748b">&larr; predicted next char</span>
         </div>
         <div class="dense-row">
-          <div style="width:50px;text-align:right;font-family:'JetBrains Mono',monospace;font-size:.72rem;color:#047857;font-weight:600">h₂</div>
+          <div style="width:50px;text-align:right;font-family:'Courier New',monospace;font-size:.72rem;color:#047857;font-weight:600">h₂</div>
           <span class="arr-sm">&rarr;</span>
           <div class="dense-mini" style="background:#f5f3ff;border:1px solid #7c3aed;color:#6d28d9">Dense(67)+Softmax</div>
           <span class="arr-sm">&rarr;</span>
@@ -509,7 +569,7 @@ grace?</div>
           <span style="font-size:.68rem;color:#64748b">&larr; predicted next char</span>
         </div>
         <div class="dense-row">
-          <div style="width:50px;text-align:right;font-family:'JetBrains Mono',monospace;font-size:.72rem;color:#047857;font-weight:600">h₃</div>
+          <div style="width:50px;text-align:right;font-family:'Courier New',monospace;font-size:.72rem;color:#047857;font-weight:600">h₃</div>
           <span class="arr-sm">&rarr;</span>
           <div class="dense-mini" style="background:#f5f3ff;border:1px solid #7c3aed;color:#6d28d9">Dense(67)+Softmax</div>
           <span class="arr-sm">&rarr;</span>
@@ -519,7 +579,7 @@ grace?</div>
           <span style="font-size:.68rem;color:#64748b">&larr; predicted next char</span>
         </div>
         <div class="dense-row">
-          <div style="width:50px;text-align:right;font-family:'JetBrains Mono',monospace;font-size:.72rem;color:#047857;font-weight:600">h₄</div>
+          <div style="width:50px;text-align:right;font-family:'Courier New',monospace;font-size:.72rem;color:#047857;font-weight:600">h₄</div>
           <span class="arr-sm">&rarr;</span>
           <div class="dense-mini" style="background:#f5f3ff;border:1px solid #7c3aed;color:#6d28d9">Dense(67)+Softmax</div>
           <span class="arr-sm">&rarr;</span>
@@ -529,7 +589,7 @@ grace?</div>
           <span style="font-size:.68rem;color:#64748b">&larr; predicted next char (space)</span>
         </div>
         <div class="dense-row">
-          <div style="width:50px;text-align:right;font-family:'JetBrains Mono',monospace;font-size:.72rem;color:#047857;font-weight:600">h₅</div>
+          <div style="width:50px;text-align:right;font-family:'Courier New',monospace;font-size:.72rem;color:#047857;font-weight:600">h₅</div>
           <span class="arr-sm">&rarr;</span>
           <div class="dense-mini" style="background:#f5f3ff;border:1px solid #7c3aed;color:#6d28d9">Dense(67)+Softmax</div>
           <span class="arr-sm">&rarr;</span>
@@ -539,7 +599,7 @@ grace?</div>
           <span style="font-size:.68rem;color:#64748b">&larr; predicted next char</span>
         </div>
         <div class="dense-row">
-          <div style="width:50px;text-align:right;font-family:'JetBrains Mono',monospace;font-size:.72rem;color:#047857;font-weight:600">h₆</div>
+          <div style="width:50px;text-align:right;font-family:'Courier New',monospace;font-size:.72rem;color:#047857;font-weight:600">h₆</div>
           <span class="arr-sm">&rarr;</span>
           <div class="dense-mini" style="background:#f5f3ff;border:1px solid #7c3aed;color:#6d28d9">Dense(67)+Softmax</div>
           <span class="arr-sm">&rarr;</span>
@@ -555,16 +615,15 @@ grace?</div>
       </div>
     </div>
 
-    <div class="note"><strong>Same Dense layer, applied 6 times.</strong> The weight matrix is shared across positions. Only the input (the hidden state) differs per row. This is what the shape <code>(batch, 100, 67)</code> means.</div>
+    <div class="note"><strong>Same Dense layer, applied 6 times.</strong> The weight matrix is shared across positions. Only the input (the hidden state) differs per row. This is what the output shape <code>(batch, 100, 67)</code> means.</div>
   </div>
 
-  <!-- ─── STEP 5: LOSS ─── -->
-  <div class="step-view" id="step-5">
+  <!-- ─── STEP 6: LOSS ─── -->
+  <div class="step-view" id="step-6">
     <div class="section-title">Step 6: Loss &amp; Backpropagation</div>
     <div class="section-sub">At every position, the predicted character is compared against the actual next character. Cross-entropy loss is computed and averaged. Gradients flow backward to update all weights.</div>
 
     <div style="max-width:540px">
-      <!-- Input / Target comparison -->
       <div style="display:flex;gap:20px;flex-wrap:wrap;margin-bottom:16px">
         <div>
           <div style="font-size:.72rem;font-weight:600;color:#64748b;margin-bottom:6px">Predictions (argmax of softmax)</div>
@@ -584,22 +643,19 @@ grace?</div>
         </div>
       </div>
 
-      <!-- Comparison rows -->
       <div style="display:flex;flex-direction:column;gap:4px;margin-bottom:16px">
         <div class="compare-row"><div class="pred-pill">i</div><span>&harr;</span><div class="target-pill">i</div><span class="check">✓</span><span style="font-size:.75rem;color:#059669">match → low loss</span></div>
         <div class="compare-row"><div class="pred-pill">n</div><span>&harr;</span><div class="target-pill">n</div><span class="check">✓</span><span style="font-size:.75rem;color:#059669">match → low loss</span></div>
         <div class="compare-row"><div class="pred-pill">g</div><span>&harr;</span><div class="target-pill">g</div><span class="check">✓</span><span style="font-size:.75rem;color:#059669">match → low loss</span></div>
         <div class="compare-row"><div class="pred-pill">&nbsp;</div><span>&harr;</span><div class="target-pill">&nbsp;</div><span class="check">✓</span><span style="font-size:.75rem;color:#059669">match → low loss</span></div>
         <div class="compare-row"><div class="pred-pill">R</div><span>&harr;</span><div class="target-pill">R</div><span class="check">✓</span><span style="font-size:.75rem;color:#059669">match → low loss</span></div>
-        <div class="compare-row"><div class="pred-pill">i</div><span>&harr;</span><div class="target-pill">i</div><span class="check">✓</span><span style="font-size:.75sem;color:#059669">match → low loss</span></div>
+        <div class="compare-row"><div class="pred-pill">i</div><span>&harr;</span><div class="target-pill">i</div><span class="check">✓</span><span style="font-size:.75rem;color:#059669">match → low loss</span></div>
       </div>
 
-      <!-- Loss formula -->
       <div class="formula">
         𝓛 = − (1/T) Σₜ log P(target_t | input₁..ₜ)
       </div>
 
-      <!-- Backprop note -->
       <div style="margin-top:14px;padding:10px 14px;background:#fff0f0;border-left:3px solid #ef4444;border-radius:0 6px 6px 0;font-size:.8rem;color:#991b1b;line-height:1.5">
         <strong>Backprop updates all weights simultaneously:</strong> gradients flow backward through Dense → GRU → Embedding. After 20 epochs, all three layers encode learned Shakespeare patterns.
       </div>
@@ -609,65 +665,70 @@ grace?</div>
   </div><!-- end left-panel -->
 
   <!-- ════ RIGHT PANEL: Code ════ -->
-  <div id="right-panel">
+  <div id="right-panel" style="display:none">
     <div id="code-header">
       <div id="code-header-title">10.3 — Generative Text with Shakespeare.ipynb</div>
       <div id="code-header-badge">Notebook Code</div>
     </div>
     <div id="code-body">
 
-      <!-- Code Section 0: Overview -->
-      <div class="code-section active" id="code-0">
-        <div class="code-step-label">Full pipeline at a glance</div>
-        <div class="code-block"><span class="code-line code-cm"># ── 1. Prepare the text ─────────────────────────</span>
-<span class="code-line"><span class="code-const">features</span> = list(split_input(shakespeare[:-<span class="code-num">1</span>], <span class="code-num">100</span>))</span>
-<span class="code-line"><span class="code-const">labels</span>   = list(split_input(shakespeare[<span class="code-num">1</span>:],  <span class="code-num">100</span>))  <span class="code-cm"># ← shifted</span></span>
-<span class="code-line"></span>
-<span class="code-line code-cm"># ── 2. Char → integer ───────────────────────────</span>
-<span class="code-line">tokenizer = layers.<span class="code-fn">TextVectorization</span>(</span>
-<span class="code-line">    split=<span class="code-str">"character"</span>, output_sequence_length=<span class="code-num">100</span>)</span>
-<span class="code-line">tokenizer.<span class="code-fn">adapt</span>(dataset.<span class="code-fn">map</span>(<span class="code-kw">lambda</span> x, y: x))</span>
-<span class="code-line"><span class="code-cm"># 67 unique characters total</span></span>
-<span class="code-line"></span>
-<span class="code-line code-cm"># ── 3. Build the model ──────────────────────────</span>
-<span class="code-line hl">inputs  = layers.<span class="code-fn">Input</span>(shape=(<span class="code-num">100</span>,), dtype=<span class="code-str">"int"</span>)</span>
-<span class="code-line hl">x       = layers.<span class="code-fn">Embedding</span>(<span class="code-num">67</span>, <span class="code-num">256</span>)(inputs)         <span class="code-cm"># 67×256</span></span>
-<span class="code-line hl">x       = layers.<span class="code-fn">GRU</span>(<span class="code-num">1024</span>, return_sequences=<span class="code-kw">True</span>)(x)  <span class="code-cm"># all h_t</span></span>
-<span class="code-line hl">outputs = layers.<span class="code-fn">Dense</span>(<span class="code-num">67</span>, activation=<span class="code-str">"softmax"</span>)(x)  <span class="code-cm"># 67 probs</span></span>
-<span class="code-line">model   = keras.<span class="code-fn">Model</span>(inputs, outputs)</span>
-<span class="code-line"></span>
-<span class="code-line code-cm"># ── 4. Compile and train ─────────────────────────</span>
-<span class="code-line">model.<span class="code-fn">compile</span>(optimizer=<span class="code-str">"adam"</span>,</span>
-<span class="code-line">              loss=<span class="code-str">"sparse_categorical_crossentropy"</span>)</span>
-<span class="code-line">model.<span class="code-fn">fit</span>(training_data, epochs=<span class="code-num">20</span>)</span>
-</div>
-      </div>
+      <!-- Code Section 0: Overview (right panel hidden for overview) -->
+      <div class="code-section" id="code-0"></div>
 
-      <!-- Code Section 1: Input -->
+      <!-- Code Section 1: Step 1 — Building Training Examples -->
       <div class="code-section" id="code-1">
-        <div class="code-step-label">Step 2 — text input & vectorization</div>
-        <div class="code-block"><span class="code-line code-cm"># ── Split into 100-char windows, offset by 1 ────</span>
-<span class="code-line hl">features = list(split_input(shakespeare[:-<span class="code-num">1</span>], <span class="code-num">100</span>))</span>
-<span class="code-line hl">labels   = list(split_input(shakespeare[<span class="code-num">1</span>:],  <span class="code-num">100</span>))  <span class="code-cm"># ← shift</span></span>
-<span class="code-line">dataset  = tf.data.Dataset.<span class="code-fn">from_tensor_slices</span>((features, labels))</span>
-<span class="code-line">training_data = dataset.<span class="code-fn">batch</span>(<span class="code-num">64</span>).<span class="code-fn">cache</span>().<span class="code-fn">shuffle</span>(<span class="code-num">10_000</span>)</span>
+        <div class="code-step-label">Step 1 — building training examples</div>
+        <div class="code-block"><span class="code-line code-cm"># The full Shakespeare text is ~1.1 MB of characters</span>
+<span class="code-line code-cm"># ── Create offset copies for X and y ────────────</span>
+<span class="code-line hl"><span class="code-const">features</span> = list(split_input(shakespeare[:-<span class="code-num">1</span>], <span class="code-num">100</span>))</span>
+<span class="code-line hl"><span class="code-const">labels</span>   = list(split_input(shakespeare[<span class="code-num">1</span>:],  <span class="code-num">100</span>))</span>
+<span class="code-line code-cm">#                             ↑ same text, shifted by 1</span>
 <span class="code-line"></span>
-<span class="code-line code-cm"># ── TextVectorization lives INSIDE the model ─────</span>
-<span class="code-line code-cm"># Raw text strings go in; integers come out.</span>
-<span class="code-line"><span class="code-const">text_input</span> = layers.<span class="code-fn">Input</span>(shape=(<span class="code-num">1</span>,), dtype=<span class="code-str">"string"</span>)</span>
-<span class="code-line hl">x = layers.<span class="code-fn">TextVectorization</span>(</span>
-<span class="code-line hl">    standardize=<span class="code-kw">None</span>,</span>
-<span class="code-line hl">    split=<span class="code-str">"character"</span>,          <span class="code-cm"># character-level</span></span>
-<span class="code-line hl">    output_sequence_length=<span class="code-num">100</span>,  <span class="code-cm"># 67 unique chars</span></span>
-<span class="code-line hl">)(text_input)</span>
-<span class="code-line"><span class="code-cm"># → output shape: (batch, 100)  integers 0–66</span></span>
-<span class="code-line"><span class="code-cm"># No separate tokenizer.adapt() call needed —</span></span>
-<span class="code-line"><span class="code-cm"># the layer learns the vocabulary from the data.</span></span>
+<span class="code-line code-cm"># Each element of features / labels is a 100-char string</span>
+<span class="code-line code-cm"># features[0] = "First Citizen:\nBefore we proceed …"</span>
+<span class="code-line code-cm"># labels[0]   = "irst Citizen:\nBefore we proceed a…"</span>
+<span class="code-line"></span>
+<span class="code-line code-cm"># ── Bundle into a tf.data.Dataset ────────────────</span>
+<span class="code-line"><span class="code-const">dataset</span> = tf.data.Dataset.<span class="code-fn">from_tensor_slices</span>(</span>
+<span class="code-line">    (features, labels))</span>
+<span class="code-line"><span class="code-const">training_data</span> = (dataset</span>
+<span class="code-line">    .<span class="code-fn">batch</span>(<span class="code-num">64</span>)</span>
+<span class="code-line">    .<span class="code-fn">cache</span>()</span>
+<span class="code-line">    .<span class="code-fn">shuffle</span>(<span class="code-num">10_000</span>))</span>
+<span class="code-line"></span>
+<span class="code-line code-cm"># result: 174 windows of 100 chars each</span>
+<span class="code-line code-cm"># target = input shifted by 1 char at every position</span>
 </div>
       </div>
 
-      <!-- Code Section 2: Embedding -->
+      <!-- Code Section 2: Step 2 — TextVectorization -->
       <div class="code-section" id="code-2">
+        <div class="code-step-label">Step 2 — TextVectorization: char → integer</div>
+        <div class="code-block"><span class="code-line code-cm"># TextVectorization lives INSIDE the model ───────</span>
+<span class="code-line code-cm"># Raw strings go in; integer tensors come out.</span>
+<span class="code-line"></span>
+<span class="code-line"><span class="code-const">text_input</span> = layers.<span class="code-fn">Input</span>(</span>
+<span class="code-line">    shape=(<span class="code-num">1</span>,), dtype=<span class="code-str">"string"</span>)</span>
+<span class="code-line"></span>
+<span class="code-line hl">x = layers.<span class="code-fn">TextVectorization</span>(</span>
+<span class="code-line hl">    standardize=<span class="code-kw">None</span>,          <span class="code-cm"># keep punctuation</span></span>
+<span class="code-line hl">    split=<span class="code-str">"character"</span>,          <span class="code-cm"># one token per char</span></span>
+<span class="code-line hl">    output_sequence_length=<span class="code-num">100</span>, <span class="code-cm"># pad/truncate → 100</span></span>
+<span class="code-line hl">)(text_input)</span>
+<span class="code-line"><span class="code-cm"># output shape: (batch, 100)  integers 0–66</span></span>
+<span class="code-line"></span>
+<span class="code-line code-cm"># Fit the vocabulary to the training data once:</span>
+<span class="code-line">tokenizer.<span class="code-fn">adapt</span>(dataset.<span class="code-fn">map</span>(<span class="code-kw">lambda</span> x, y: x))</span>
+<span class="code-line"><span class="code-cm"># After .adapt(): 67 unique characters discovered</span></span>
+<span class="code-line"><span class="code-cm"># Each char maps to a stable int 0–66 forever</span></span>
+<span class="code-line"></span>
+<span class="code-line code-cm"># Example mappings:</span>
+<span class="code-line code-cm"># 'F' → 25,  'i' → 11,  ' ' → 1,  '\n' → 2</span>
+</div>
+      </div>
+
+      <!-- Code Section 3: Step 3 — Embedding -->
+      <div class="code-section" id="code-3">
         <div class="code-step-label">Step 3 — embedding lookup</div>
         <div class="code-block"><span class="code-line code-cm"># Model receives integer token IDs</span>
 <span class="code-line">inputs = layers.<span class="code-fn">Input</span>(</span>
@@ -676,8 +737,8 @@ grace?</div>
 <span class="code-line">)</span>
 <span class="code-line"></span>
 <span class="code-line code-cm"># Embedding: int → 256-dim dense vector ─────────</span>
-<span class="code-line"><span class="code-cm"># Each integer is a ROW INDEX into this table</span></span>
-<span class="code-line"><span class="code-cm">#   int 28  →  retrieve row 28  →  256-dim vector</span></span>
+<span class="code-line code-cm"># Each integer is a ROW INDEX into this table</span>
+<span class="code-line code-cm">#   int 28  →  retrieve row 28  →  256-dim vector</span>
 <span class="code-line hl">x = layers.<span class="code-fn">Embedding</span>(</span>
 <span class="code-line hl">    input_dim=<span class="code-num">67</span>,    <span class="code-cm"># vocabulary size</span></span>
 <span class="code-line hl">    output_dim=<span class="code-num">256</span>,  <span class="code-cm"># embedding dimension</span></span>
@@ -690,8 +751,8 @@ grace?</div>
 </div>
       </div>
 
-      <!-- Code Section 3: RNN -->
-      <div class="code-section" id="code-3">
+      <!-- Code Section 4: Step 4 — GRU -->
+      <div class="code-section" id="code-4">
         <div class="code-step-label">Step 4 — GRU recurrent layer</div>
         <div class="code-block"><span class="code-line code-cm"># Input: (batch, 100, 256)  — embeddings</span>
 <span class="code-line code-cm"># At each timestep t:</span>
@@ -710,14 +771,14 @@ grace?</div>
 <span class="code-line code-cm"># The same 1024-dim vector:</span>
 <span class="code-line code-cm">#   → passed RIGHT  as the next GRU call's state</span>
 <span class="code-line code-cm">#   → passed DOWN   into Dense(67) for prediction</span>
-<span class="code-line"><span class="code-cm"># These are not separate tensors — it is one h_t.</span></span>
+<span class="code-line code-cm"># These are not separate tensors — it is one h_t.</span>
 <span class="code-line"></span>
 <span class="code-line">x = layers.<span class="code-fn">Dropout</span>(<span class="code-num">0.1</span>)(x)  <span class="code-cm"># light regularization</span></span>
 </div>
       </div>
 
-      <!-- Code Section 4: Dense -->
-      <div class="code-section" id="code-4">
+      <!-- Code Section 5: Step 5 — Dense -->
+      <div class="code-section" id="code-5">
         <div class="code-step-label">Step 5 — Dense + Softmax</div>
         <div class="code-block"><span class="code-line code-cm"># Input: (batch, 100, 1024) — all hidden states</span>
 <span class="code-line code-cm"># Dense applied INDEPENDENTLY at every position</span>
@@ -725,7 +786,7 @@ grace?</div>
 <span class="code-line code-cm">#   h_1 → Dense → softmax → 67 probs → argmax → ĉ₁</span>
 <span class="code-line code-cm">#   h_2 → Dense → softmax → 67 probs → argmax → ĉ₂</span>
 <span class="code-line code-cm">#   …</span>
-<span class="code-line code-cm">#   h_100 → Dense → softmax → 67 probs → argmax → ĉ₁₀₀</span>
+<span class="code-line code-cm">#   h_100 → Dense → softmax → 67 probs → ĉ₁₀₀</span>
 <span class="code-line"></span>
 <span class="code-line hl">outputs = layers.<span class="code-fn">Dense</span>(</span>
 <span class="code-line hl">    vocabulary_size,          <span class="code-cm"># 67</span></span>
@@ -744,8 +805,8 @@ grace?</div>
 </div>
       </div>
 
-      <!-- Code Section 5: Loss -->
-      <div class="code-section" id="code-5">
+      <!-- Code Section 6: Step 6 — Loss -->
+      <div class="code-section" id="code-6">
         <div class="code-step-label">Step 6 — loss & training</div>
         <div class="code-block"><span class="code-line code-cm"># Compile: specify loss function and optimizer ──</span>
 <span class="code-line">model.<span class="code-fn">compile</span>(</span>
@@ -778,15 +839,15 @@ grace?</div>
 
 <script>
 // ── CONFIGURATION ──────────────────────────────────────────────
-const SECTIONS = 6;
+const SECTIONS = 7;  // 0=Overview, 1–6=Steps 1–6
 let step = 0;
 let conversation = null;
 let walkthroughActive = false;
 
-// Human-readable labels for each step
 const stepLabels = [
-  "Step 1 — Overview: The Full Training Pipeline",
-  "Step 2 — Input Preparation: Text → Integers",
+  "Overview — The Full Training Pipeline",
+  "Step 1 — Building Training Examples",
+  "Step 2 — TextVectorization: Characters → Integers",
   "Step 3 — Embedding Layer: Integer → 256-dim Vector",
   "Step 4 — GRU Recurrent Layer: Building Hidden States",
   "Step 5 — Dense + Softmax: One Prediction per Position",
@@ -794,15 +855,16 @@ const stepLabels = [
 ];
 
 const descriptions = [
-  "The full CharRNN training pipeline: raw text in, predicted next character at every position.",
-  "Text is split by character, mapped to integers (67 unique chars), and offset by 1 to create input/target pairs.",
-  "Each integer is a row index into a learned 67×256 embedding table — integer 28 retrieves row 28.",
-  "The GRU processes one embedding per step; each hidden state hₜ is both the output and the next step's state input.",
-  "Each of the 6 hidden states independently feeds its own Dense(67)+Softmax row — all 6 predictions in one pass.",
-  "Cross-entropy loss at every position; backprop updates Embedding, GRU, and Dense weights simultaneously."
+  "The full CharRNN training pipeline: raw Shakespeare text → predicted next character at every position.",
+  "The corpus is split into 100-char windows. X is chars 0–99, y is chars 1–100 — the same text offset by 1. That shift creates free supervised labels.",
+  "A TextVectorization layer inside the model splits each string into characters and maps each to a unique integer. 67 unique characters → integers 0–66.",
+  "Each integer is a row index into a learned 67×256 embedding table. Integer 28 retrieves row 28 — a 256-dimensional dense vector.",
+  "The GRU processes one embedding at a time. Each hidden state hₜ is both the output to Dense and the next step's state input. With return_sequences=True, all hidden states are collected.",
+  "Each of the 100 hidden states independently passes through the same Dense(67)+Softmax — 100 predictions in one forward pass. Output shape: (batch, 100, 67).",
+  "Sparse categorical cross-entropy loss averaged across all 100 positions. Backprop updates Embedding, GRU, and Dense weights simultaneously."
 ];
 
-// ── HELPERS ────────────────────────────────────────────────────
+// ── SHOW STEP ───────────────────────────────────────────────────
 function showStep(s) {
   document.querySelectorAll('.step-view').forEach((el,i) => {
     el.classList.toggle('active', i === s);
@@ -810,147 +872,190 @@ function showStep(s) {
   document.querySelectorAll('.code-section').forEach((el,i) => {
     el.classList.toggle('active', i === s);
   });
-  // Hide right panel entirely on Step 1 (Overview); show from Step 2 onward
-  document.getElementById('right-panel').style.display = (s === 0) ? 'none' : 'flex';
-  document.getElementById('left-panel').style.width = (s === 0) ? '100%' : '56%';
-  document.getElementById('step-counter').textContent = 'Step ' + (s+1) + ' of ' + SECTIONS;
+  // Overview: full width, no right panel
+  const isOverview = (s === 0);
+  document.getElementById('right-panel').style.display = isOverview ? 'none' : 'flex';
+  document.getElementById('left-panel').style.width    = isOverview ? '100%' : '56%';
+  // Counter: "Overview" or "Step X of 6"
+  document.getElementById('step-counter').textContent =
+    isOverview ? 'Overview' : ('Step ' + s + ' of 6');
   document.getElementById('desc-bar').textContent = descriptions[s];
   document.getElementById('btn-prev').disabled = (s === 0);
   document.getElementById('btn-next').disabled = (s === SECTIONS - 1);
-  // Scroll code panel to top when step changes
   document.getElementById('code-body').scrollTop = 0;
 }
 
 function updateUI() {
   showStep(step);
-  if (step === 2) setTimeout(animateEmbedding, 400);
-  if (step === 3) setTimeout(function(){ resetRNN(); animateRNN(); }, 400);
+  if (step === 1) { renderWindow(windowPos); }
+  if (step === 3) { setTimeout(animateEmbedding, 400); }
+  if (step === 4) { setTimeout(function(){ resetRNN(); animateRNN(); }, 400); }
 }
 
-// ── WALKTHROUGH (ElevenLabs Conversational AI) ─────────────────
-async function startWalkthrough() {
-  if (walkthroughActive) return;
-  const Conversation = window.ElevenLabsClient && window.ElevenLabsClient.Conversation
-    ? window.ElevenLabsClient.Conversation
-    : (window.client && window.client.Conversation)
-      ? window.client.Conversation
-      : null;
+// ── WINDOW ANIMATION (Step 1) ──────────────────────────────────
+const CORPUS = "First Citizen:\nBefore we proceed any further, hear me speak.\nAll: Speak, speak.\nFirst Citizen: You are all resolved rather to die than to famish?\nAll: Resolved, resolved.\nFirst Citizen: First, you know Caius Marcius is chief enemy to the people.\nAll: We know't, we know't.\nFirst Citizen: Let us kill him and we'll have corn at our own price.\nIs't a verdict?\nAll: No more talking on't; let it be done: away, away!\nSecond Citizen: One word, good citizens.\nFirst Citizen: We are accounted poor citizens, the patricians good. What authority surfeits on would relieve us: if they would yield us but the superfluity while it were wholesome, we might guess they relieved us humanely; but they think we are too dear: the leanness that afflicts us, the object of our misery, is as an inventory to particularise their abundance; our sufferance is a gain to them.";
+const WIN_SIZE = 100;
+const MAX_WINDOWS = 174;
+let windowPos = 0;
+let windowAnimRunning = false;
+let windowTimer = null;
 
-  // Try common export names from the UMD bundle
-  const ConvClass = Conversation
-    || (window.ElevenLabs && window.ElevenLabs.Conversation)
-    || (window.elevenlabs && window.elevenlabs.Conversation)
-    || (window.Elevenlabs && window.Elevenlabs.Conversation);
+function renderWindow(winIdx) {
+  const corpus = CORPUS.repeat(20);
+  const start = winIdx * WIN_SIZE;
+  const xStr = corpus.substring(start, start + WIN_SIZE);
+  const yStr = corpus.substring(start + 1, start + WIN_SIZE + 1);
 
-  if (!ConvClass) {
-    alert('ElevenLabs SDK not loaded yet — try again in a moment.');
+  // Tape text: show 70 chars starting slightly before window
+  const dispStart = Math.max(0, start - 4);
+  const tapeText = document.getElementById('tape-text');
+  if (tapeText) {
+    tapeText.textContent = corpus.substring(dispStart, dispStart + 70).replace(/\n/g, '↵');
+    // Slide tape left by 4 chars to keep window start near left edge
+    const charPx = 7.6;
+    tapeText.style.left = (8 - (start - dispStart) * 0) + 'px';
+  }
+
+  // Window highlight: 15 chars wide (visual representation)
+  const tapeWindow = document.getElementById('tape-window');
+  if (tapeWindow) {
+    tapeWindow.style.left = '8px';
+    tapeWindow.style.width = '130px';
+  }
+
+  // X chars row
+  const xChars = document.getElementById('x-chars');
+  const yChars = document.getElementById('y-chars');
+  if (xChars) {
+    xChars.innerHTML = '';
+    yChars.innerHTML = '';
+    const showN = 10;
+    for (let j = 0; j < showN; j++) {
+      const xCh = xStr[j] || '';
+      const yCh = yStr[j] || '';
+
+      const xEl = document.createElement('div');
+      xEl.className = 'token';
+      xEl.style.cssText = 'width:26px;height:26px;font-size:.68rem;flex-shrink:0';
+      xEl.textContent = xCh === '\n' ? '↵' : xCh;
+      xChars.appendChild(xEl);
+
+      const yEl = xEl.cloneNode(false);
+      yEl.textContent = yCh === '\n' ? '↵' : yCh;
+      yEl.style.borderColor = '#059669';
+      yEl.style.background = '#ecfdf5';
+      yEl.style.color = '#047857';
+      yChars.appendChild(yEl);
+    }
+  }
+
+  // Pair spotlight
+  const spotlight = document.getElementById('pair-spotlight');
+  if (spotlight) {
+    const xFirst = (xStr[0] === '\n') ? '\\n' : (xStr[0] || '?');
+    const yFirst = (yStr[0] === '\n') ? '\\n' : (yStr[0] || '?');
+    spotlight.innerHTML =
+      '<span style="color:#2563eb;font-weight:700">X[0]="' + xFirst + '"</span>' +
+      '<span style="color:#64748b;margin:0 8px">→ predict →</span>' +
+      '<span style="color:#059669;font-weight:700">y[0]="' + yFirst + '"</span>' +
+      '<span style="color:#94a3b8;margin-left:12px">(100 such pairs per window)</span>';
+  }
+
+  const counter = document.getElementById('window-counter');
+  if (counter) counter.textContent = 'Window ' + (winIdx + 1) + ' of ' + MAX_WINDOWS;
+}
+
+function toggleWindowAnim() {
+  const btn = document.getElementById('btn-window-play');
+  if (windowAnimRunning) {
+    windowAnimRunning = false;
+    clearTimeout(windowTimer);
+    if (btn) btn.textContent = '▶ Play';
+  } else {
+    windowAnimRunning = true;
+    if (btn) btn.textContent = '⏸ Pause';
+    (function tick() {
+      if (!windowAnimRunning) return;
+      renderWindow(windowPos);
+      windowPos = (windowPos + 1) % MAX_WINDOWS;
+      windowTimer = setTimeout(tick, 750);
+    })();
+  }
+}
+
+// ── SPLIT ANIMATION (Step 2) ───────────────────────────────────
+const SPLIT_CHARS = ['F','i','r','s','t',' ','C','i','t','i'];
+const SPLIT_INTS  = [ 25, 11, 44, 47, 48,  1, 16, 11, 48, 11];
+let splitDone = false;
+
+function animateSplit() {
+  const splitRow  = document.getElementById('split-row');
+  const arrowRow  = document.getElementById('split-arrows');
+  const intRow    = document.getElementById('int-row');
+  const btn       = document.getElementById('btn-split-play');
+  if (!splitRow) return;
+
+  if (splitDone) {
+    // Reset
+    splitRow.innerHTML = '';
+    arrowRow.style.opacity = '0';
+    arrowRow.innerHTML = '';
+    intRow.innerHTML = '';
+    splitDone = false;
+    if (btn) btn.textContent = '▶ Animate split';
     return;
   }
 
-  setWalkthroughUI('connecting');
-  try {
-    conversation = await ConvClass.startSession({
-      agentId: 'agent_7401kn5cbedfesj9851hnsdn50jw',
-      dynamicVariables: {
-        current_step: stepLabels[step]
-      },
-      clientTools: {
-        navigate: async ({ action, step_number }) => {
-          if (action === 'next' && step < SECTIONS - 1) { step++; updateUI(); }
-          else if (action === 'previous' && step > 0) { step--; updateUI(); }
-          else if (action === 'goto' && step_number !== undefined) {
-            // agent passes 1-based step numbers matching the screen labels
-            const idx = Math.min(Math.max(1, parseInt(step_number)), SECTIONS) - 1;
-            step = idx; updateUI();
-          }
-          return 'Done. The screen now shows: ' + stepLabels[step] + '. Please narrate this step now.';
-        }
-      },
-      onConnect: () => { walkthroughActive = true; setWalkthroughUI('listening'); },
-      onDisconnect: () => { walkthroughActive = false; conversation = null; setWalkthroughUI('idle'); },
-      onModeChange: ({ mode }) => { if (walkthroughActive) setWalkthroughUI(mode); },
-      onError: (err) => { console.error('Agent error:', err); setWalkthroughUI('idle'); }
+  if (btn) btn.textContent = '⟳ Reset';
+
+  // Phase 1: show individual char boxes (animate in)
+  splitRow.innerHTML = '';
+  SPLIT_CHARS.forEach(function(ch, i) {
+    const box = document.createElement('div');
+    box.className = 'token animate-in';
+    box.style.animationDelay = (i * 55) + 'ms';
+    box.textContent = ch === ' ' ? '⎵' : ch;
+    splitRow.appendChild(box);
+  });
+
+  // Phase 2: show downward arrows
+  setTimeout(function() {
+    arrowRow.innerHTML = '';
+    SPLIT_CHARS.forEach(function() {
+      const a = document.createElement('div');
+      a.style.cssText = 'width:40px;text-align:center;font-size:1rem;color:#0891b2;flex-shrink:0';
+      a.textContent = '↓';
+      arrowRow.appendChild(a);
     });
-  } catch(e) {
-    console.error('Could not start walkthrough:', e);
-    setWalkthroughUI('idle');
-  }
+    arrowRow.style.opacity = '1';
+  }, 750);
+
+  // Phase 3: show integer circles
+  setTimeout(function() {
+    intRow.innerHTML = '';
+    SPLIT_INTS.forEach(function(n, i) {
+      const circle = document.createElement('div');
+      circle.className = 'int-circle animate-in';
+      circle.style.animationDelay = (i * 55) + 'ms';
+      circle.textContent = n;
+      intRow.appendChild(circle);
+    });
+    splitDone = true;
+  }, 1550);
 }
 
-async function endWalkthrough() {
-  if (conversation) { await conversation.endSession(); }
-  walkthroughActive = false; conversation = null;
-  setWalkthroughUI('idle');
-}
-
-function setWalkthroughUI(state) {
-  const bar = document.getElementById('walkthrough-bar');
-  const statusDot = document.getElementById('wt-dot');
-  const statusText = document.getElementById('wt-status');
-  const btnStart = document.getElementById('btn-walkthrough');
-
-  if (state === 'idle') {
-    bar.style.display = 'none';
-    btnStart.disabled = false;
-    btnStart.textContent = '▶ Start Walkthrough';
-  } else if (state === 'connecting') {
-    bar.style.display = 'flex';
-    statusDot.className = 'wt-dot connecting';
-    statusText.textContent = 'Connecting…';
-    btnStart.disabled = true;
-    btnStart.textContent = 'Connecting…';
-  } else if (state === 'listening') {
-    bar.style.display = 'flex';
-    statusDot.className = 'wt-dot listening';
-    statusText.textContent = 'Listening for your question…';
-    btnStart.disabled = true;
-  } else if (state === 'speaking') {
-    bar.style.display = 'flex';
-    statusDot.className = 'wt-dot speaking';
-    statusText.textContent = 'Prof. Burtch is speaking…';
-    btnStart.disabled = true;
-  }
-}
-
-// ── BUTTONS ────────────────────────────────────────────────────
-document.getElementById('btn-prev').addEventListener('click', () => {
-  if (step > 0) { step--; updateUI(); }
-});
-document.getElementById('btn-next').addEventListener('click', () => {
-  if (step < SECTIONS-1) { step++; updateUI(); }
-});
-document.getElementById('btn-reset').addEventListener('click', () => {
-  step = 0;
-  updateUI();
-});
-
-// ── KEYBOARD ───────────────────────────────────────────────────
-document.addEventListener('keydown', e => {
-  if (e.key === 'ArrowRight' || e.key === ' ') {
-    e.preventDefault();
-    if (step < SECTIONS-1) { step++; updateUI(); }
-  }
-  if (e.key === 'ArrowLeft') {
-    e.preventDefault();
-    if (step > 0) { step--; updateUI(); }
-  }
-  if (e.key === 'r' || e.key === 'R') {
-    document.getElementById('btn-reset').click();
-  }
-});
-
-// ── EMBEDDING ANIMATION ────────────────────────────────────────
+// ── EMBEDDING ANIMATION (Step 3) ───────────────────────────────
 function animateEmbedding() {
   const row = document.getElementById('emb-row-28');
   if (!row) return;
   row.style.background = '#fef9c3';
-  setTimeout(() => {
+  setTimeout(function() {
     row.style.background = '#a5f3fc';
-    setTimeout(() => { row.style.background = '#fef9c3'; }, 600);
+    setTimeout(function() { row.style.background = '#fef9c3'; }, 600);
   }, 300);
 }
 
-// ── RNN ANIMATION ─────────────────────────────────────────────
+// ── RNN ANIMATION (Step 4) ─────────────────────────────────────
 const chars = ['K','i','n','g',' ','R'];
 let rnnRunning = false;
 
@@ -992,7 +1097,6 @@ function animateRNN() {
     const ch = chars[i];
     status.textContent = 'Processing token ' + (i+1) + ' / ' + chars.length + ' …';
 
-    // Phase 1: show input + state (0ms)
     inputSlot.textContent = 'emb("' + (ch === ' ' ? '⎵' : ch) + '")';
     inputSlot.style.opacity = '1';
     const prevState = i === 0 ? '∅ (zeros)' : 'h' + i;
@@ -1003,19 +1107,16 @@ function animateRNN() {
     outputSlot.style.opacity = '.3';
     feedback.style.opacity = '0';
 
-    // Phase 2: GRU cell glows (600ms)
-    setTimeout(() => {
+    setTimeout(function() {
       cellBox.style.boxShadow = '0 0 20px rgba(5,150,105,.55)';
     }, 600);
 
-    // Phase 3: output appears + add to collected row (1200ms)
-    setTimeout(() => {
+    setTimeout(function() {
       const hLabel = 'h' + (i+1);
       outputSlot.textContent = hLabel;
       outputSlot.style.opacity = '1';
       cellBox.style.boxShadow = '';
 
-      // Add to collected
       const pill = document.createElement('div');
       pill.className = 'h-pill';
       pill.style.fontSize = '.72rem';
@@ -1023,7 +1124,6 @@ function animateRNN() {
       pill.textContent = hLabel;
       collected.appendChild(pill);
 
-      // Log line
       const line = document.createElement('div');
       line.textContent = hLabel + ' = GRU(emb("' + (ch === ' ' ? '⎵' : ch) + '"), ' + prevState + ')';
       line.style.color = '#059669';
@@ -1031,13 +1131,11 @@ function animateRNN() {
       if (log.children.length > 6) log.removeChild(log.firstChild);
     }, 1200);
 
-    // Phase 4: feedback arrow flashes (1800ms)
-    setTimeout(() => {
+    setTimeout(function() {
       if (i < chars.length - 1) feedback.style.opacity = '1';
     }, 1800);
 
-    // Phase 5: reset slots and advance (2400ms + 500ms pause)
-    setTimeout(() => {
+    setTimeout(function() {
       outputSlot.style.opacity = '.3';
       inputSlot.style.opacity = '.3';
       feedback.style.opacity = '0';
@@ -1048,9 +1146,117 @@ function animateRNN() {
   doStep();
 }
 
+// ── WALKTHROUGH (ElevenLabs Conversational AI) ─────────────────
+async function startWalkthrough() {
+  if (walkthroughActive) return;
+  const ConvClass =
+    (window.ElevenLabsClient && window.ElevenLabsClient.Conversation) ||
+    (window.client && window.client.Conversation) ||
+    (window.ElevenLabs && window.ElevenLabs.Conversation) ||
+    (window.elevenlabs && window.elevenlabs.Conversation) ||
+    (window.Elevenlabs && window.Elevenlabs.Conversation);
+
+  if (!ConvClass) {
+    alert('ElevenLabs SDK not loaded yet — try again in a moment.');
+    return;
+  }
+
+  setWalkthroughUI('connecting');
+  try {
+    conversation = await ConvClass.startSession({
+      agentId: 'agent_7401kn5cbedfesj9851hnsdn50jw',
+      dynamicVariables: { current_step: stepLabels[step] },
+      clientTools: {
+        navigate: async function({ action, step_number }) {
+          if (action === 'next' && step < SECTIONS - 1) { step++; updateUI(); }
+          else if (action === 'previous' && step > 0) { step--; updateUI(); }
+          else if (action === 'goto' && step_number !== undefined) {
+            // Agent passes 0=Overview, 1-6=Steps 1-6
+            const idx = Math.min(Math.max(0, parseInt(step_number)), SECTIONS - 1);
+            step = idx; updateUI();
+          }
+          return 'Done. The screen now shows: ' + stepLabels[step] + '. Please narrate this step now.';
+        }
+      },
+      onConnect: function() { walkthroughActive = true; setWalkthroughUI('listening'); },
+      onDisconnect: function() { walkthroughActive = false; conversation = null; setWalkthroughUI('idle'); },
+      onModeChange: function({ mode }) { if (walkthroughActive) setWalkthroughUI(mode); },
+      onError: function(err) { console.error('Agent error:', err); setWalkthroughUI('idle'); }
+    });
+  } catch(e) {
+    console.error('Could not start walkthrough:', e);
+    setWalkthroughUI('idle');
+  }
+}
+
+async function endWalkthrough() {
+  if (conversation) { await conversation.endSession(); }
+  walkthroughActive = false; conversation = null;
+  setWalkthroughUI('idle');
+}
+
+function setWalkthroughUI(state) {
+  const bar       = document.getElementById('walkthrough-bar');
+  const statusDot = document.getElementById('wt-dot');
+  const statusText= document.getElementById('wt-status');
+  const btnStart  = document.getElementById('btn-walkthrough');
+
+  if (state === 'idle') {
+    bar.style.display = 'none';
+    btnStart.disabled = false;
+    btnStart.textContent = '▶ Start Walkthrough';
+  } else if (state === 'connecting') {
+    bar.style.display = 'flex';
+    statusDot.className = 'wt-dot connecting';
+    statusText.textContent = 'Connecting…';
+    btnStart.disabled = true;
+    btnStart.textContent = 'Connecting…';
+  } else if (state === 'listening') {
+    bar.style.display = 'flex';
+    statusDot.className = 'wt-dot listening';
+    statusText.textContent = 'Listening for your question…';
+    btnStart.disabled = true;
+  } else if (state === 'speaking') {
+    bar.style.display = 'flex';
+    statusDot.className = 'wt-dot speaking';
+    statusText.textContent = 'Prof. Burtch is speaking…';
+    btnStart.disabled = true;
+  }
+}
+
+// ── BUTTONS ────────────────────────────────────────────────────
+document.getElementById('btn-prev').addEventListener('click', function() {
+  if (step > 0) { step--; updateUI(); }
+});
+document.getElementById('btn-next').addEventListener('click', function() {
+  if (step < SECTIONS - 1) { step++; updateUI(); }
+});
+document.getElementById('btn-reset').addEventListener('click', function() {
+  windowAnimRunning = false;
+  clearTimeout(windowTimer);
+  windowPos = 0;
+  splitDone = false;
+  step = 0;
+  updateUI();
+});
+
+// ── KEYBOARD ───────────────────────────────────────────────────
+document.addEventListener('keydown', function(e) {
+  if (e.key === 'ArrowRight' || e.key === ' ') {
+    e.preventDefault();
+    if (step < SECTIONS - 1) { step++; updateUI(); }
+  }
+  if (e.key === 'ArrowLeft') {
+    e.preventDefault();
+    if (step > 0) { step--; updateUI(); }
+  }
+  if (e.key === 'r' || e.key === 'R') {
+    document.getElementById('btn-reset').click();
+  }
+});
+
 // ── INIT ───────────────────────────────────────────────────────
 updateUI();
 </script>
-
 </body>
 </html>
