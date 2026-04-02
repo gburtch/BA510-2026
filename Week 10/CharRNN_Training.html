@@ -353,28 +353,28 @@ code,.mono{font-family:'Courier New',Courier,monospace}
     <div class="phase-block">
       <div class="phase-label">① How we construct training observations</div>
 
-      <div style="margin-bottom:8px;font-size:.72rem;color:#64748b;font-weight:600">Shakespeare corpus — sliding 100-char window →</div>
+      <!-- Tape -->
+      <div style="margin-bottom:6px;font-size:.72rem;color:#64748b;font-weight:600">
+        Shakespeare corpus — <span style="color:#2563eb">blue = X (99 chars)</span> &nbsp;·&nbsp; <span style="color:#059669">green = y (next char)</span>
+      </div>
       <div id="tape-outer" style="overflow:hidden;border-radius:6px;border:1px solid #e2e8f0;background:#f8fafc;padding:6px 0;position:relative;height:34px">
-        <div id="tape-text" style="font-family:'Courier New',monospace;font-size:.82rem;white-space:nowrap;position:absolute;transition:left 0.6s ease;color:#475569;padding:4px 8px">First Citizen: Before we proceed any further, hear me speak. All: Speak, speak.</div>
-        <div id="tape-window" style="position:absolute;top:0;bottom:0;background:rgba(59,130,246,.12);border:2px solid #3b82f6;border-radius:4px;transition:left .5s ease,width .5s ease;pointer-events:none;left:8px;width:130px"></div>
+        <div id="tape-text" style="font-family:'Courier New',monospace;font-size:.82rem;white-space:nowrap;position:absolute;color:#475569;padding:4px 8px">First Citizen: Before we proceed any further, hear me speak. All: Speak, speak.</div>
+        <div id="tape-window" style="position:absolute;top:0;bottom:0;background:rgba(59,130,246,.12);border:2px solid #3b82f6;border-radius:4px 0 0 4px;transition:left .5s ease,width .5s ease;pointer-events:none"></div>
+        <div id="tape-y" style="position:absolute;top:0;bottom:0;background:rgba(5,150,105,.15);border:2px solid #059669;border-radius:0 4px 4px 0;border-left:none;transition:left .5s ease,width .5s ease;pointer-events:none"></div>
       </div>
 
-      <!-- X / y rows -->
-      <div style="margin-top:14px;display:flex;flex-direction:column;gap:8px">
-        <div style="display:flex;align-items:center;gap:8px">
-          <div style="width:58px;font-size:.72rem;font-weight:700;color:#2563eb;flex-shrink:0">X (input)</div>
-          <div id="x-chars" style="display:flex;gap:3px;flex-wrap:nowrap;overflow:hidden"></div>
-          <div style="font-size:.7rem;color:#94a3b8;flex-shrink:0">… 99 chars total</div>
-        </div>
-        <div style="display:flex;align-items:center;gap:8px">
-          <div style="width:58px;font-size:.72rem;font-weight:700;color:#059669;flex-shrink:0">y (label)</div>
-          <div id="y-chars" style="display:flex;gap:3px"></div>
-          <div style="font-size:.7rem;color:#94a3b8;flex-shrink:0">← single next char</div>
-        </div>
+      <!-- Single X → y row -->
+      <div style="margin-top:14px;display:flex;align-items:center;gap:3px;flex-wrap:nowrap;overflow-x:auto;padding-bottom:4px">
+        <div style="font-size:.7rem;font-weight:700;color:#2563eb;flex-shrink:0;margin-right:3px">X</div>
+        <div id="x-chars" style="display:flex;gap:3px;flex-wrap:nowrap"></div>
+        <div style="font-size:.75rem;color:#94a3b8;margin:0 5px;flex-shrink:0;white-space:nowrap">··· (99 chars)</div>
+        <div style="font-size:1.1rem;color:#475569;flex-shrink:0;margin:0 4px">→</div>
+        <div style="font-size:.7rem;font-weight:700;color:#059669;flex-shrink:0;margin-right:3px">y</div>
+        <div id="y-chars" style="display:flex"></div>
       </div>
 
-      <!-- Pair spotlight -->
-      <div id="pair-spotlight" style="margin-top:10px;display:flex;gap:8px;align-items:center;min-height:28px;font-size:.72rem;color:#64748b;font-family:'Courier New',monospace">
+      <!-- Spotlight -->
+      <div id="pair-spotlight" style="margin-top:10px;min-height:22px;font-size:.72rem;color:#64748b;font-family:'Courier New',monospace">
         Click Play to see windows advance →
       </div>
 
@@ -384,29 +384,7 @@ code,.mono{font-family:'Courier New',Courier,monospace}
       </div>
     </div>
 
-    <!-- ── PHASE B: X enters the network ── -->
-    <div class="phase-block">
-      <div class="phase-label">② X enters the network — y is held aside for the loss</div>
-      <div style="display:flex;gap:16px;align-items:flex-start;flex-wrap:wrap">
-        <div>
-          <div style="font-size:.7rem;color:#2563eb;font-weight:600;margin-bottom:5px">X — 100-char string → model input</div>
-          <div style="font-family:'Courier New',monospace;font-size:.78rem;line-height:1.5;padding:10px 14px;background:#eff6ff;border:2px solid #3b82f6;border-radius:8px;color:#1e40af;max-width:280px;word-break:break-all">First Citizen:\nBefore we proceed any further, hear me spea</div>
-          <div style="margin-top:6px;font-size:.68rem;color:#64748b">100 characters, entered as a raw string</div>
-        </div>
-        <div style="padding-top:28px;font-size:1.3rem;color:#94a3b8">&rarr;</div>
-        <div style="padding-top:4px">
-          <div style="padding:8px 16px;background:#ecfdf5;border:2px solid #059669;border-radius:8px;font-size:.8rem;color:#047857;font-weight:600">MODEL</div>
-          <div style="font-size:.68rem;color:#64748b;margin-top:4px;text-align:center">predicts next char<br>at every position</div>
-        </div>
-        <div style="padding-top:4px">
-          <div style="font-size:.7rem;color:#059669;font-weight:600;margin-bottom:5px">y — held aside for loss</div>
-          <div style="font-family:'Courier New',monospace;font-size:.78rem;line-height:1.5;padding:10px 14px;background:#ecfdf5;border:2px solid #059669;border-radius:8px;color:#047857;max-width:280px;word-break:break-all">irst Citizen:\nBefore we proceed any further, hear me speak</div>
-          <div style="margin-top:6px;font-size:.68rem;color:#64748b">Same text, shifted 1 char forward</div>
-        </div>
-      </div>
-    </div>
-
-    <div class="note"><strong>Key insight:</strong> <code>features = shakespeare[:-1]</code> and <code>labels = shakespeare[1:]</code>. The label at every position is just the <em>next</em> character — free supervised signal from unsupervised text.</div>
+    <div class="note"><strong>Key insight:</strong> <code>features = shakespeare[:-1]</code> and <code>labels = shakespeare[1:]</code>. The label is always the very next character — free supervised signal from unsupervised text.</div>
   </div>
 
   <!-- ─── STEP 2: TEXT VECTORIZATION ─── -->
@@ -918,36 +896,45 @@ let windowAnimRunning = false;
 let windowTimer = null;
 
 function renderWindow(winIdx) {
-  const corpus = CORPUS.repeat(20);
+  const corpusLong = CORPUS.repeat(20);
   const start = winIdx * WIN_SIZE;
-  const xStr = corpus.substring(start, start + WIN_SIZE);
-  const yStr = corpus.substring(start + 1, start + WIN_SIZE + 1);
+  // X = 99 chars, y = the one char right after
+  const xStr = corpusLong.substring(start, start + 99);
+  const yCh  = corpusLong[start + 99] || '?';
 
-  // Tape text: show 70 chars starting slightly before window
-  const dispStart = Math.max(0, start - 4);
-  const tapeText = document.getElementById('tape-text');
-  if (tapeText) {
-    tapeText.textContent = corpus.substring(dispStart, dispStart + 70).replace(/\n/g, '↵');
-    // Slide tape left by 4 chars to keep window start near left edge
-    const charPx = 7.6;
-    tapeText.style.left = (8 - (start - dispStart) * 0) + 'px';
-  }
-
-  // Window highlight: 15 chars wide (visual representation)
+  // ── Tape ──
+  // Show text from `start` so window always begins at the left edge
+  const tapeText   = document.getElementById('tape-text');
+  const tapeOuter  = document.getElementById('tape-outer');
   const tapeWindow = document.getElementById('tape-window');
-  if (tapeWindow) {
-    tapeWindow.style.left = '8px';
-    tapeWindow.style.width = '130px';
+  const tapeY      = document.getElementById('tape-y');
+  if (tapeText && tapeOuter) {
+    const charPx  = 7.6;
+    const padding = 8;
+    // Display starts 2 chars before window so we see a tiny bit of context
+    const dispStart = Math.max(0, start - 2);
+    tapeText.textContent = corpusLong.substring(dispStart, dispStart + 80).replace(/\n/g, '↵');
+    tapeText.style.left  = padding + 'px';
+
+    const contextChars = start - dispStart;           // chars of context before window
+    const winLeft  = padding + contextChars * charPx; // px position of window start
+    const outerW   = tapeOuter.offsetWidth || 520;
+    const maxW     = outerW - winLeft - charPx;       // max available width
+    const winWidth = Math.min(99 * charPx, maxW - charPx); // X: 99 chars, clipped
+    const yLeft    = winLeft + winWidth;
+    const yWidth   = charPx;                          // y: 1 char wide
+
+    if (tapeWindow) { tapeWindow.style.left = winLeft + 'px'; tapeWindow.style.width = winWidth + 'px'; }
+    if (tapeY)      { tapeY.style.left      = yLeft   + 'px'; tapeY.style.width      = yWidth   + 'px'; }
   }
 
-  // X chars row (show first 10 of 99)
+  // ── X char boxes (first 10 of 99) ──
   const xChars = document.getElementById('x-chars');
   const yChars = document.getElementById('y-chars');
   if (xChars) {
     xChars.innerHTML = '';
     yChars.innerHTML = '';
-    const showN = 10;
-    for (let j = 0; j < showN; j++) {
+    for (let j = 0; j < 10; j++) {
       const xCh = xStr[j] || '';
       const xEl = document.createElement('div');
       xEl.className = 'token';
@@ -955,25 +942,23 @@ function renderWindow(winIdx) {
       xEl.textContent = xCh === '\n' ? '↵' : xCh;
       xChars.appendChild(xEl);
     }
-    // y: single char — the 99th char (char after the 99-char window)
-    const yCh = corpus.repeat(20)[start + 99] || '?';
+    // y: single char, larger, green
     const yEl = document.createElement('div');
     yEl.className = 'token';
-    yEl.style.cssText = 'width:32px;height:32px;font-size:.82rem;flex-shrink:0;border-color:#059669;background:#ecfdf5;color:#047857;font-weight:700';
+    yEl.style.cssText = 'width:32px;height:32px;font-size:.85rem;flex-shrink:0;border-color:#059669;border-width:2px;background:#ecfdf5;color:#047857;font-weight:700';
     yEl.textContent = yCh === '\n' ? '↵' : yCh;
     yChars.appendChild(yEl);
   }
 
-  // Pair spotlight
+  // ── Spotlight ──
   const spotlight = document.getElementById('pair-spotlight');
   if (spotlight) {
-    const xFirst = (xStr[0] === '\n') ? '\\n' : (xStr[0] || '?');
-    const yLabel = corpus.repeat(20)[start + 99] || '?';
-    const yDisp  = (yLabel === '\n') ? '\\n' : yLabel;
+    const x0 = (xStr[0] === '\n') ? '\\n' : (xStr[0] || '?');
+    const yD  = (yCh   === '\n') ? '\\n' : yCh;
     spotlight.innerHTML =
-      '<span style="color:#2563eb;font-weight:700">X = 99 chars starting with "' + xFirst + '…"</span>' +
-      '<span style="color:#64748b;margin:0 8px">→ predict →</span>' +
-      '<span style="color:#059669;font-weight:700">y = "' + yDisp + '"</span>';
+      '<span style="color:#2563eb;font-weight:700">X starts: "' + x0 + '···"</span>' +
+      '<span style="color:#475569;margin:0 8px">(99 chars) →</span>' +
+      '<span style="color:#059669;font-weight:700">y = "' + yD + '"</span>';
   }
 
   const counter = document.getElementById('window-counter');
