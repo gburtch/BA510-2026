@@ -260,6 +260,7 @@ code,.mono{font-family:'Courier New',Courier,monospace}
     <button id="btn-prev" disabled>&larr; Prev</button>
     <button id="btn-next" class="primary">Next &rarr;</button>
     <button id="btn-reset">Reset</button>
+    <button id="btn-code" onclick="toggleCode()" style="display:none">&#60;/&#62; Show Code</button>
     <button id="btn-walkthrough" onclick="startWalkthrough()">&#9654; Start Walkthrough</button>
   </div>
 </div>
@@ -864,6 +865,25 @@ const descriptions = [
   "Sparse categorical cross-entropy loss averaged across all 100 positions. Backprop updates Embedding, GRU, and Dense weights simultaneously."
 ];
 
+// ── CODE PANEL TOGGLE ──────────────────────────────────────────
+let codeVisible = false;
+
+function toggleCode() {
+  codeVisible = !codeVisible;
+  const btn = document.getElementById('btn-code');
+  btn.textContent = codeVisible ? '✕ Hide Code' : '</> Show Code';
+  applyLayout();
+}
+
+function applyLayout() {
+  const isOverview = (step === 0);
+  const showPanel  = !isOverview && codeVisible;
+  document.getElementById('right-panel').style.display = showPanel ? 'flex' : 'none';
+  document.getElementById('left-panel').style.width    = showPanel ? '56%' : '100%';
+  // Show/hide the code button (only when not on overview)
+  document.getElementById('btn-code').style.display = isOverview ? 'none' : 'inline-block';
+}
+
 // ── SHOW STEP ───────────────────────────────────────────────────
 function showStep(s) {
   document.querySelectorAll('.step-view').forEach((el,i) => {
@@ -872,17 +892,14 @@ function showStep(s) {
   document.querySelectorAll('.code-section').forEach((el,i) => {
     el.classList.toggle('active', i === s);
   });
-  // Overview: full width, no right panel
-  const isOverview = (s === 0);
-  document.getElementById('right-panel').style.display = isOverview ? 'none' : 'flex';
-  document.getElementById('left-panel').style.width    = isOverview ? '100%' : '56%';
   // Counter: "Overview" or "Step X of 6"
   document.getElementById('step-counter').textContent =
-    isOverview ? 'Overview' : ('Step ' + s + ' of 6');
+    (s === 0) ? 'Overview' : ('Step ' + s + ' of 6');
   document.getElementById('desc-bar').textContent = descriptions[s];
   document.getElementById('btn-prev').disabled = (s === 0);
   document.getElementById('btn-next').disabled = (s === SECTIONS - 1);
   document.getElementById('code-body').scrollTop = 0;
+  applyLayout();
 }
 
 function updateUI() {
