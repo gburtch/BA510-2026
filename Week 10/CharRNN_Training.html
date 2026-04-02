@@ -978,7 +978,7 @@ function toggleWindowAnim() {
       if (!windowAnimRunning) return;
       renderWindow(windowPos);
       windowPos = (windowPos + 1) % MAX_WINDOWS;
-      windowTimer = setTimeout(tick, 750);
+      windowTimer = setTimeout(tick, 1400);
     })();
   }
 }
@@ -1013,7 +1013,7 @@ function animateSplit() {
   SPLIT_CHARS.forEach(function(ch, i) {
     const box = document.createElement('div');
     box.className = 'token animate-in';
-    box.style.animationDelay = (i * 55) + 'ms';
+    box.style.animationDelay = (i * 100) + 'ms';
     box.textContent = ch === ' ' ? '⎵' : ch;
     splitRow.appendChild(box);
   });
@@ -1028,7 +1028,7 @@ function animateSplit() {
       arrowRow.appendChild(a);
     });
     arrowRow.style.opacity = '1';
-  }, 750);
+  }, 1400);
 
   // Phase 3: show integer circles
   setTimeout(function() {
@@ -1036,12 +1036,12 @@ function animateSplit() {
     SPLIT_INTS.forEach(function(n, i) {
       const circle = document.createElement('div');
       circle.className = 'int-circle animate-in';
-      circle.style.animationDelay = (i * 55) + 'ms';
+      circle.style.animationDelay = (i * 100) + 'ms';
       circle.textContent = n;
       intRow.appendChild(circle);
     });
     splitDone = true;
-  }, 1550);
+  }, 2800);
 }
 
 // ── EMBEDDING ANIMATION (Step 3) ───────────────────────────────
@@ -1109,7 +1109,7 @@ function animateRNN() {
 
     setTimeout(function() {
       cellBox.style.boxShadow = '0 0 20px rgba(5,150,105,.55)';
-    }, 600);
+    }, 900);
 
     setTimeout(function() {
       const hLabel = 'h' + (i+1);
@@ -1133,15 +1133,15 @@ function animateRNN() {
 
     setTimeout(function() {
       if (i < chars.length - 1) feedback.style.opacity = '1';
-    }, 1800);
+    }, 2400);
 
     setTimeout(function() {
       outputSlot.style.opacity = '.3';
       inputSlot.style.opacity = '.3';
       feedback.style.opacity = '0';
       i++;
-      setTimeout(doStep, 500);
-    }, 2400);
+      setTimeout(doStep, 800);
+    }, 3400);
   }
   doStep();
 }
