@@ -539,7 +539,6 @@ window.simliSetSpeaking = function(speaking) {
     <button id="btn-next" class="primary">Next &rarr;</button>
     <button id="btn-reset">Reset</button>
     <button id="btn-code" onclick="toggleCode()" style="display:none">&#60;/&#62; Show Code</button>
-    <button id="btn-walkthrough" onclick="startWalkthrough()">&#9654; Start Walkthrough</button>
   </div>
 </div>
 
@@ -1454,6 +1453,7 @@ function animateRNN() {
 // ── WALKTHROUGH (ElevenLabs Conversational AI) ─────────────────
 async function startWalkthrough() {
   if (walkthroughActive) return;
+  walkthroughActive = true;   // lock synchronously — onConnect will confirm later
   const ConvClass =
     (window.ElevenLabsClient && window.ElevenLabsClient.Conversation) ||
     (window.client && window.client.Conversation) ||
@@ -1502,6 +1502,7 @@ async function startWalkthrough() {
     });
   } catch(e) {
     console.error('Could not start walkthrough:', e);
+    walkthroughActive = false;   // release lock so user can retry
     setWalkthroughUI('idle');
   }
 }
@@ -1517,32 +1518,30 @@ function setWalkthroughUI(state) {
   const bar       = document.getElementById('walkthrough-bar');
   const statusDot = document.getElementById('wt-dot');
   const statusText= document.getElementById('wt-status');
-  const btnStart  = document.getElementById('btn-walkthrough');
+  const ctaBtn    = document.getElementById('wt-cta-btn');
   const cta       = document.getElementById('wt-cta');
 
   if (state === 'idle') {
     bar.style.display = 'none';
-    btnStart.disabled = false;
-    btnStart.textContent = '▶ Start Walkthrough';
+    if (ctaBtn) { ctaBtn.disabled = false; ctaBtn.style.opacity = '1'; }
     if (cta) cta.style.display = 'flex';
   } else if (state === 'connecting') {
     bar.style.display = 'flex';
     statusDot.className = 'wt-dot connecting';
     statusText.textContent = 'Connecting…';
-    btnStart.disabled = true;
-    btnStart.textContent = 'Connecting…';
+    if (ctaBtn) { ctaBtn.disabled = true; ctaBtn.style.opacity = '.5'; }
     if (cta) cta.style.display = 'none';
   } else if (state === 'listening') {
     bar.style.display = 'flex';
     statusDot.className = 'wt-dot listening';
     statusText.textContent = 'Listening for your question…';
-    btnStart.disabled = true;
+    if (ctaBtn) ctaBtn.disabled = true;
     if (cta) cta.style.display = 'none';
   } else if (state === 'speaking') {
     bar.style.display = 'flex';
     statusDot.className = 'wt-dot speaking';
     statusText.textContent = 'Prof. Burtch is speaking…';
-    btnStart.disabled = true;
+    if (ctaBtn) ctaBtn.disabled = true;
     if (cta) cta.style.display = 'none';
   }
 }
