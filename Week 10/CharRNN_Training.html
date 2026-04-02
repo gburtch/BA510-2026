@@ -1460,12 +1460,27 @@ function setWalkthroughUI(state) {
   }
 }
 
+// ── AGENT SYNC ─────────────────────────────────────────────────
+// When the user navigates manually, tell the agent what's now on screen
+// so it stops talking about the previous step and narrates the current one.
+function notifyAgentOfNavigation() {
+  if (!walkthroughActive || !conversation) return;
+  var msg = 'The user has manually navigated. The screen NOW shows step ' +
+    (step + 1) + ' of ' + SECTIONS + ': "' + stepLabels[step] + '". ' +
+    'Stop narrating the previous step immediately and narrate this one instead.';
+  if (typeof conversation.sendContextualUpdate === 'function') {
+    conversation.sendContextualUpdate(msg);
+  } else if (typeof conversation.sendUserMessage === 'function') {
+    conversation.sendUserMessage(msg);
+  }
+}
+
 // ── BUTTONS ────────────────────────────────────────────────────
 document.getElementById('btn-prev').addEventListener('click', function() {
-  if (step > 0) { step--; updateUI(); }
+  if (step > 0) { step--; updateUI(); notifyAgentOfNavigation(); }
 });
 document.getElementById('btn-next').addEventListener('click', function() {
-  if (step < SECTIONS - 1) { step++; updateUI(); }
+  if (step < SECTIONS - 1) { step++; updateUI(); notifyAgentOfNavigation(); }
 });
 document.getElementById('btn-reset').addEventListener('click', function() {
   windowAnimRunning = false;
@@ -1474,17 +1489,18 @@ document.getElementById('btn-reset').addEventListener('click', function() {
   splitDone = false;
   step = 0;
   updateUI();
+  notifyAgentOfNavigation();
 });
 
 // ── KEYBOARD ───────────────────────────────────────────────────
 document.addEventListener('keydown', function(e) {
   if (e.key === 'ArrowRight' || e.key === ' ') {
     e.preventDefault();
-    if (step < SECTIONS - 1) { step++; updateUI(); }
+    if (step < SECTIONS - 1) { step++; updateUI(); notifyAgentOfNavigation(); }
   }
   if (e.key === 'ArrowLeft') {
     e.preventDefault();
-    if (step > 0) { step--; updateUI(); }
+    if (step > 0) { step--; updateUI(); notifyAgentOfNavigation(); }
   }
   if (e.key === 'r' || e.key === 'R') {
     document.getElementById('btn-reset').click();
