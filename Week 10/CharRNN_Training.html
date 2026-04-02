@@ -436,97 +436,10 @@ code,.mono{font-family:'Courier New',Courier,monospace}
 .cta-ring:nth-child(2){animation-delay:.55s}
 #wt-cta-label{font-size:.78rem;color:var(--muted);letter-spacing:.01em}
 
-/* ── SIMLI AVATAR ── */
-#simli-wrap{
-  position:fixed;bottom:24px;right:24px;z-index:300;
-  display:none;flex-direction:column;align-items:center;gap:8px;
-}
-#simli-video-container{
-  width:160px;height:160px;border-radius:50%;overflow:hidden;
-  background:#0f172a;border:3px solid #3b82f6;
-  box-shadow:0 4px 24px rgba(37,99,235,.35),0 0 0 6px rgba(37,99,235,.1);
-  position:relative;
-  transition:box-shadow .3s;
-}
-#simli-video-container.speaking{
-  border-color:#059669;
-  box-shadow:0 4px 24px rgba(5,150,105,.4),0 0 0 6px rgba(5,150,105,.12);
-}
-#simli-video{
-  width:100%;height:100%;object-fit:cover;
-}
-#simli-audio{display:none}
-#simli-status-dot{
-  width:8px;height:8px;border-radius:50%;background:#94a3b8;
-  position:absolute;bottom:8px;right:8px;
-  border:2px solid #fff;transition:background .3s;
-}
-#simli-wrap.connected #simli-status-dot{background:#059669}
 </style>
 <script src="https://cdn.jsdelivr.net/npm/livekit-client@2.11.4/dist/livekit-client.umd.js"></script>
 <script>window.livekitClient = window.LivekitClient;</script>
 <script src="https://cdn.jsdelivr.net/npm/@11labs/client@0.2.0/dist/lib.umd.js"></script>
-<script type="module">
-// ── SIMLI SETUP ──────────────────────────────────────────────────
-import { SimliClient, generateSimliSessionToken, LogLevel } from 'https://esm.sh/simli-client@3.0.1';
-
-const SIMLI_API_KEY = 'qvduguwy21y2mh2759jp';
-const SIMLI_FACE_ID = '6ebf0aa7-6fed-443d-a4c6-fd1e3080b215';
-
-let simliClient = null;
-
-window.initSimli = async function() {
-  try {
-    const tokenResp = await generateSimliSessionToken({
-      apiKey: SIMLI_API_KEY,
-      config: {
-        faceId: SIMLI_FACE_ID,
-        maxSessionLength: 1800,
-        maxIdleTime: 300,
-        handleSilence: false  // we drive audio externally from ElevenLabs
-      }
-    });
-    const token = tokenResp.session_token;
-
-    const videoEl = document.getElementById('simli-video');
-    const audioEl = document.getElementById('simli-audio');
-
-    simliClient = new SimliClient(token, videoEl, audioEl, null, LogLevel.WARNING, 'livekit');
-
-    simliClient.on('connected', () => {
-      document.getElementById('simli-wrap').classList.add('connected');
-    });
-    simliClient.on('disconnected', () => {
-      document.getElementById('simli-wrap').classList.remove('connected');
-    });
-
-    await simliClient.start();
-    document.getElementById('simli-wrap').style.display = 'flex';
-  } catch(e) {
-    console.warn('Simli init failed:', e);
-  }
-};
-
-window.simliSendAudio = function(base64str) {
-  if (!simliClient) return;
-  try {
-    const binary = atob(base64str);
-    const bytes = new Uint8Array(binary.length);
-    for (let i = 0; i < binary.length; i++) bytes[i] = binary.charCodeAt(i);
-    simliClient.sendAudioData(bytes);
-  } catch(e) {}
-};
-
-window.simliStop = function() {
-  if (simliClient) { simliClient.close(); simliClient = null; }
-  document.getElementById('simli-wrap').style.display = 'none';
-  document.getElementById('simli-wrap').classList.remove('connected');
-};
-
-window.simliSetSpeaking = function(speaking) {
-  document.getElementById('simli-video-container').classList.toggle('speaking', speaking);
-};
-</script>
 </head>
 <body>
 
@@ -1111,15 +1024,6 @@ window.simliSetSpeaking = function(speaking) {
 
 </div><!-- end main-content -->
 
-<!-- ══ SIMLI AVATAR ══ -->
-<div id="simli-wrap">
-  <div id="simli-video-container">
-    <video id="simli-video" autoplay playsinline muted></video>
-    <div id="simli-status-dot"></div>
-  </div>
-</div>
-<audio id="simli-audio" autoplay muted></audio>
-
 <script>
 // ── CONFIGURATION ──────────────────────────────────────────────
 const SECTIONS = 7;  // 0=Overview, 1–6=Steps 1–6
@@ -1498,8 +1402,6 @@ async function startWalkthrough() {
       onConnect: function() {
         walkthroughActive = true;
         setWalkthroughUI('listening');
-        // Init Simli AFTER ElevenLabs LiveKit is established to avoid shared-LiveKit race
-        setTimeout(function() { if (window.initSimli) window.initSimli(); }, 500);
       },
       onDisconnect: function() {
         walkthroughActive = false; conversation = null;
@@ -1507,10 +1409,6 @@ async function startWalkthrough() {
       },
       onModeChange: function({ mode }) {
         if (walkthroughActive) setWalkthroughUI(mode);
-        if (window.simliSetSpeaking) window.simliSetSpeaking(mode === 'speaking');
-      },
-      onAudio: function(base64Audio) {
-        if (window.simliSendAudio) window.simliSendAudio(base64Audio);
       },
       onError: function(err) { console.error('Agent error:', err); }
     });
@@ -1528,7 +1426,6 @@ async function endWalkthrough() {
   walkthroughLaunched = false;  // allow a fresh start after intentional end
   conversation = null;
   setWalkthroughUI('idle');
-  if (window.simliStop) window.simliStop();
 }
 
 function setWalkthroughUI(state) {
