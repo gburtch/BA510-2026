@@ -1453,9 +1453,14 @@ function animateRNN() {
 
 // ── WALKTHROUGH (ElevenLabs Conversational AI) ─────────────────
 async function startWalkthrough() {
-  if (walkthroughLaunched) return;   // hard gate — survives any onDisconnect flicker
+  if (walkthroughLaunched) return;
   walkthroughLaunched = true;
   walkthroughActive = true;
+
+  // Disable button at DOM level immediately — before any async work
+  const ctaBtn = document.getElementById('wt-cta-btn');
+  if (ctaBtn) { ctaBtn.disabled = true; ctaBtn.style.opacity = '.5'; ctaBtn.style.pointerEvents = 'none'; }
+
   const ConvClass =
     (window.ElevenLabsClient && window.ElevenLabsClient.Conversation) ||
     (window.client && window.client.Conversation) ||
@@ -1465,12 +1470,12 @@ async function startWalkthrough() {
 
   if (!ConvClass) {
     alert('ElevenLabs SDK not loaded yet — try again in a moment.');
+    walkthroughLaunched = false; walkthroughActive = false;
+    if (ctaBtn) { ctaBtn.disabled = false; ctaBtn.style.opacity = '1'; ctaBtn.style.pointerEvents = ''; }
     return;
   }
 
   setWalkthroughUI('connecting');
-  // Start Simli avatar in parallel
-  if (window.initSimli) window.initSimli();
   try {
     conversation = await ConvClass.startSession({
       agentId: 'agent_7401kn5cbedfesj9851hnsdn50jw',
@@ -1484,16 +1489,20 @@ async function startWalkthrough() {
           if (action === 'next' && step < SECTIONS - 1) { step++; updateUI(); }
           else if (action === 'previous' && step > 0) { step--; updateUI(); }
           else if (action === 'goto' && step_number !== undefined) {
-            // Agent passes 0=Overview, 1-6=Steps 1-6
             const idx = Math.min(Math.max(0, parseInt(step_number)), SECTIONS - 1);
             step = idx; updateUI();
           }
           return 'Done. The screen now shows: ' + stepLabels[step] + '. Please narrate this step now.';
         }
       },
-      onConnect: function() { walkthroughActive = true; setWalkthroughUI('listening'); },
-      onDisconnect: function() { walkthroughActive = false; conversation = null;
-        // Only show idle/CTA if this was an intentional end (endWalkthrough resets walkthroughLaunched)
+      onConnect: function() {
+        walkthroughActive = true;
+        setWalkthroughUI('listening');
+        // Init Simli AFTER ElevenLabs LiveKit is established to avoid shared-LiveKit race
+        setTimeout(function() { if (window.initSimli) window.initSimli(); }, 500);
+      },
+      onDisconnect: function() {
+        walkthroughActive = false; conversation = null;
         if (!walkthroughLaunched) setWalkthroughUI('idle');
       },
       onModeChange: function({ mode }) {
@@ -1503,12 +1512,12 @@ async function startWalkthrough() {
       onAudio: function(base64Audio) {
         if (window.simliSendAudio) window.simliSendAudio(base64Audio);
       },
-      onError: function(err) { console.error('Agent error:', err); setWalkthroughUI('idle'); }
+      onError: function(err) { console.error('Agent error:', err); }
     });
   } catch(e) {
     console.error('Could not start walkthrough:', e);
     walkthroughActive = false;
-    walkthroughLaunched = false;  // release so user can retry after a real failure
+    walkthroughLaunched = false;
     setWalkthroughUI('idle');
   }
 }
